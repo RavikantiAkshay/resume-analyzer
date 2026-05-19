@@ -1,15 +1,31 @@
 import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar/index.jsx";
+import Home from "./components/Home/index.jsx";
+import Contact from "./components/Contact/index.jsx";
 
-// Page placeholders — will be replaced with real components
-const Home = () => <div className="page"><h1>Home</h1></div>;
-const Register = () => <div className="page"><h1>Register</h1></div>;
-const Login = () => <div className="page"><h1>Login</h1></div>;
-const YourResumes = () => <div className="page"><h1>Your Resumes</h1></div>;
-const Contact = () => <div className="page"><h1>Contact</h1></div>;
+// Placeholder pages — will be built in the Authentication phase
+const Register = () => (
+  <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "var(--nav-height)" }}>
+    <h1 style={{ color: "var(--text-primary)", fontSize: "var(--font-3xl)", fontWeight: 700 }}>Register</h1>
+  </main>
+);
+
+const Login = () => (
+  <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "var(--nav-height)" }}>
+    <h1 style={{ color: "var(--text-primary)", fontSize: "var(--font-3xl)", fontWeight: 700 }}>Login</h1>
+  </main>
+);
+
+const YourResumes = () => (
+  <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "var(--nav-height)" }}>
+    <h1 style={{ color: "var(--text-primary)", fontSize: "var(--font-3xl)", fontWeight: 700 }}>Your Resumes</h1>
+  </main>
+);
 
 function App() {
   return (
     <div className="app">
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
