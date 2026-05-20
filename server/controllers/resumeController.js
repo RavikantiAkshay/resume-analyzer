@@ -1,4 +1,8 @@
 import { parseResume } from "../utils/resumeParser.js";
+import { extractKeywords } from "../utils/keywordExtractor.js";
+import { calculateATSScore } from "../utils/atsScore.js";
+import { analyzeWithGroq } from "../utils/aiAnalyzer.js";
+import Resume from "../models/Resume.js";
 
 /**
  * Controller to handle resume PDF upload and text parsing
@@ -36,3 +40,55 @@ export const uploadResume = async (req, res) => {
     });
   }
 };
+
+/**
+ * Controller to handle ATS scoring and AI analysis
+ * POST /resume/analyze
+ */
+export const analyzeResume = async (req, res) => {
+  try {
+    const { resumeText, jobDescription } = req.body;
+
+    if (!resumeText || !jobDescription) {
+      return res.status(400).json({
+        success: false,
+        message: "Both resumeText and jobDescription are required.",
+      });
+    }
+
+    // 1. Keyword Extraction
+    const resumeKeywords = extractKeywords(resumeText);
+    const jdKeywords = extractKeywords(jobDescription);
+
+    // 2. ATS Score Calculation
+    const atsScore = calculateATSScore(jdKeywords, resumeKeywords);
+
+    // 3. Groq AI Analysis
+    const suggestions = await analyzeWithGroq(resumeText, jobDescription);
+
+    // 4. Save to Database (Optional but good practice since we have the model)
+    const newResume = await Resume.create({
+      userId: req.user._id,
+      text: resumeText,
+      atsScore,
+      suggestions,
+    });
+
+    // 5. Return Response
+    return res.status(200).json({
+      success: true,
+      message: "Resume analyzed successfully!",
+      atsScore,
+      suggestions,
+      resumeId: newResume._id,
+    });
+  } catch (err) {
+    console.error("Resume Analysis Controller Error:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to analyze the resume.",
+      error: err.message,
+    });
+  }
+};
+
