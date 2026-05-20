@@ -1,7 +1,17 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./index.css";
 
 const Home = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const ctaPath = isLoggedIn ? "/your-resumes" : "/register";
+
   return (
     <main className="home" id="home-page">
       {/* Hero Section */}
@@ -23,8 +33,8 @@ const Home = () => {
           </p>
 
           <div className="hero__actions animate-slide-up-delay-3">
-            <Link to="/register" className="btn btn-primary" id="hero-cta">
-              Start Analyzing — Free
+            <Link to={ctaPath} className="btn btn-primary" id="hero-cta">
+              {isLoggedIn ? "Go to Dashboard" : "Start Analyzing — Free"}
               <span className="btn-arrow">→</span>
             </Link>
             <Link to="/contact" className="btn btn-secondary" id="hero-learn-more">
@@ -146,8 +156,8 @@ const Home = () => {
             <p className="text-secondary" style={{ fontSize: "var(--font-lg)", maxWidth: "500px", margin: "0 auto" }}>
               Join thousands of job seekers who are using AI to land their dream job.
             </p>
-            <Link to="/register" className="btn btn-primary" id="cta-bottom-btn">
-              Get Started — It's Free
+            <Link to={ctaPath} className="btn btn-primary" id="cta-bottom-btn">
+              {isLoggedIn ? "Go to Dashboard" : "Get Started — It's Free"}
               <span className="btn-arrow">→</span>
             </Link>
           </div>
