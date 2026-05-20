@@ -27,6 +27,27 @@ app.get("/ping", (req, res) => {
   res.json({ status: "ok", message: "Server is running smoothly" });
 });
 
+// Global error handler (catches Multer file-size/type errors, etc.)
+app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(413).json({
+      success: false,
+      message: "File too large. Maximum allowed size is 10MB.",
+    });
+  }
+  if (err.message === "Only PDF files are supported!") {
+    return res.status(415).json({
+      success: false,
+      message: err.message,
+    });
+  }
+  console.error("Unhandled Error:", err);
+  return res.status(500).json({
+    success: false,
+    message: err.message || "Internal server error",
+  });
+});
+
 // Database connection
 const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/resume_ats_analyzer";
 mongoose.connect(mongoUri)
@@ -41,3 +62,4 @@ mongoose.connect(mongoUri)
     console.error("Database connection failed:", err.message);
     process.exit(1);
   });
+

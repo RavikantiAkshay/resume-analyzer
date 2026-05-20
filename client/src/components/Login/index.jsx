@@ -15,6 +15,12 @@ const Login = () => {
 
   const API_URL = "http://localhost:5000";
 
+  // Redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) navigate("/your-resumes", { replace: true });
+  }, [navigate]);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
