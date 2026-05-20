@@ -13,6 +13,7 @@ const YourResumes = () => {
   const [step, setStep] = useState("upload"); // "upload" | "jd" | "analyzing" | "results"
   const [error, setError] = useState("");
   const [results, setResults] = useState(null);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const getToken = () => localStorage.getItem("token");
 
@@ -102,6 +103,7 @@ const YourResumes = () => {
       if (!res.ok) throw new Error(data.message || "Analysis failed.");
 
       setResults(data);
+      setActiveTab("overview");
       setStep("results");
     } catch (err) {
       setError(err.message);
@@ -119,15 +121,87 @@ const YourResumes = () => {
     setResults(null);
     setError("");
     setStep("upload");
+    setActiveTab("overview");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // ── Score Color ──
+  // ── Helpers ──
   const getScoreColor = (score) => {
     if (score >= 75) return "#22c55e";
     if (score >= 50) return "#eab308";
     return "#ef4444";
   };
+
+  const getGradeColor = (grade) => {
+    if (grade?.startsWith("A")) return "#22c55e";
+    if (grade?.startsWith("B")) return "#3b82f6";
+    if (grade?.startsWith("C")) return "#eab308";
+    return "#ef4444";
+  };
+
+  const getPriorityColor = (priority) => {
+    if (priority === "critical") return "#ef4444";
+    if (priority === "important") return "#eab308";
+    return "#6b7280";
+  };
+
+  // ── SVG Score Ring ──
+  const ScoreRing = ({ score, size = 160, strokeWidth = 10 }) => {
+    const radius = (size - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (score / 100) * circumference;
+    const color = getScoreColor(score);
+
+    return (
+      <svg width={size} height={size} className="score-ring">
+        <circle
+          className="score-ring__bg"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+        />
+        <circle
+          className="score-ring__progress"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          stroke={color}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+        />
+        <text x="50%" y="44%" className="score-ring__value" style={{ fill: color }}>
+          {score}
+        </text>
+        <text x="50%" y="60%" className="score-ring__label">
+          / 100
+        </text>
+      </svg>
+    );
+  };
+
+  // ── Section Score Bar ──
+  const SectionBar = ({ label, score }) => (
+    <div className="section-bar">
+      <div className="section-bar__header">
+        <span className="section-bar__label">{label}</span>
+        <span className="section-bar__value" style={{ color: getScoreColor(score) }}>
+          {score}%
+        </span>
+      </div>
+      <div className="section-bar__track">
+        <div
+          className="section-bar__fill"
+          style={{ width: `${score}%`, background: getScoreColor(score) }}
+        />
+      </div>
+    </div>
+  );
+
+  const s = results?.suggestions;
+  const isStructured = typeof s === "object" && s !== null;
 
   return (
     <main className="dashboard-page animate-fade-in" id="your-resumes-page">
@@ -165,7 +239,7 @@ const YourResumes = () => {
           </div>
         )}
 
-        {/* ── Step 1: Upload ── */}
+        {/* ══════════ Step 1: Upload ══════════ */}
         {step === "upload" && (
           <div className="card dashboard-card animate-slide-up">
             <div
@@ -213,7 +287,7 @@ const YourResumes = () => {
           </div>
         )}
 
-        {/* ── Step 2: Job Description ── */}
+        {/* ══════════ Step 2: Job Description ══════════ */}
         {step === "jd" && (
           <div className="card dashboard-card animate-slide-up">
             <div className="jd-section">
@@ -249,7 +323,7 @@ const YourResumes = () => {
           </div>
         )}
 
-        {/* ── Step 3: Analyzing Spinner ── */}
+        {/* ══════════ Step 3: Analyzing Spinner ══════════ */}
         {step === "analyzing" && (
           <div className="card dashboard-card analyzing-card animate-slide-up">
             <div className="analyzing-spinner-container">
@@ -260,65 +334,278 @@ const YourResumes = () => {
           </div>
         )}
 
-        {/* ── Step 4: Results ── */}
+        {/* ══════════ Step 4: Results ══════════ */}
         {step === "results" && results && (
           <div className="results-container animate-slide-up">
-            {/* Score Card */}
-            <div className="card results-score-card">
-              <h2 className="results-score-title">ATS Compatibility Score</h2>
-              <div className="score-circle" style={{ "--score-color": getScoreColor(results.atsScore) }}>
-                <span className="score-value">{results.atsScore}</span>
-                <span className="score-unit">/ 100</span>
+
+            {/* ── Hero Score Section ── */}
+            <div className="card results-hero">
+              <div className="results-hero__left">
+                <ScoreRing score={results.atsScore} />
               </div>
-              <p className="score-verdict">
-                {results.atsScore >= 75
-                  ? "Great match! Your resume aligns well with this role."
-                  : results.atsScore >= 50
-                  ? "Decent match. Some improvements could boost your chances."
-                  : "Low match. Significant improvements are recommended."}
-              </p>
+              <div className="results-hero__right">
+                <p className="results-hero__label">ATS Compatibility Score</p>
+                {isStructured && s.letter_grade && (
+                  <div className="results-hero__grade" style={{ color: getGradeColor(s.letter_grade) }}>
+                    {s.letter_grade}
+                  </div>
+                )}
+                {isStructured && s.overall_assessment && (
+                  <p className="results-hero__assessment">{s.overall_assessment}</p>
+                )}
+                {/* Keyword Stats */}
+                {results.keywordStats && (
+                  <div className="keyword-stats-row">
+                    <div className="keyword-stat">
+                      <span className="keyword-stat__value">{results.keywordStats.matchedCount}</span>
+                      <span className="keyword-stat__label">Matched</span>
+                    </div>
+                    <div className="keyword-stat">
+                      <span className="keyword-stat__value">{results.keywordStats.missingCount}</span>
+                      <span className="keyword-stat__label">Missing</span>
+                    </div>
+                    <div className="keyword-stat">
+                      <span className="keyword-stat__value">{results.keywordStats.totalJdKeywords}</span>
+                      <span className="keyword-stat__label">Total JD Keywords</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* AI Suggestions */}
-            {typeof results.suggestions === "object" && results.suggestions !== null && (
-              <>
-                {/* Missing Skills */}
-                {results.suggestions.missing_skills?.length > 0 && (
+            {/* ── Tabs Navigation ── */}
+            {isStructured && (
+              <div className="results-tabs">
+                {[
+                  { id: "overview", label: "Overview" },
+                  { id: "keywords", label: "Keywords" },
+                  { id: "skills", label: "Missing Skills" },
+                  { id: "tips", label: "Optimization" },
+                  { id: "bullets", label: "Bullet Rewrites" },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    className={`results-tab ${activeTab === tab.id ? "results-tab--active" : ""}`}
+                    onClick={() => setActiveTab(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* ── Tab: Overview ── */}
+            {isStructured && activeTab === "overview" && (
+              <div className="results-tab-panel animate-fade-in">
+                {/* Section Scores */}
+                {s.section_scores && (
+                  <div className="card results-section-card">
+                    <h3 className="results-section-title">📊 Section Breakdown</h3>
+                    <div className="section-bars">
+                      <SectionBar label="Skills Match" score={s.section_scores.skills_match} />
+                      <SectionBar label="Experience Relevance" score={s.section_scores.experience_relevance} />
+                      <SectionBar label="Education Fit" score={s.section_scores.education_fit} />
+                      <SectionBar label="Formatting Quality" score={s.section_scores.formatting_quality} />
+                      <SectionBar label="Keyword Optimization" score={s.section_scores.keyword_optimization} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Strengths & Weaknesses */}
+                <div className="results-two-col">
+                  {s.strengths?.length > 0 && (
+                    <div className="card results-section-card">
+                      <h3 className="results-section-title">✅ Strengths</h3>
+                      <ul className="results-list results-list--strengths">
+                        {s.strengths.map((item, i) => (
+                          <li key={i} className="results-list-item">{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {s.weaknesses?.length > 0 && (
+                    <div className="card results-section-card">
+                      <h3 className="results-section-title">⚠️ Weaknesses</h3>
+                      <ul className="results-list results-list--weaknesses">
+                        {s.weaknesses.map((item, i) => (
+                          <li key={i} className="results-list-item">{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Verbs */}
+                {s.action_verb_analysis && (
+                  <div className="card results-section-card">
+                    <h3 className="results-section-title">💪 Action Verb Analysis</h3>
+                    <div className="verb-analysis">
+                      {s.action_verb_analysis.strong_verbs_used?.length > 0 && (
+                        <div className="verb-group">
+                          <span className="verb-group__label">Strong verbs you're using:</span>
+                          <div className="tag-cloud">
+                            {s.action_verb_analysis.strong_verbs_used.map((v, i) => (
+                              <span key={i} className="tag tag--green">{v}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {s.action_verb_analysis.suggested_verbs?.length > 0 && (
+                        <div className="verb-group">
+                          <span className="verb-group__label">Consider using:</span>
+                          <div className="tag-cloud">
+                            {s.action_verb_analysis.suggested_verbs.map((v, i) => (
+                              <span key={i} className="tag tag--blue">{v}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Tab: Keywords ── */}
+            {isStructured && activeTab === "keywords" && (
+              <div className="results-tab-panel animate-fade-in">
+                {/* AI Keyword Analysis */}
+                {s.keyword_analysis && (
+                  <div className="card results-section-card">
+                    <h3 className="results-section-title">🔑 AI Keyword Analysis</h3>
+                    {s.keyword_analysis.well_used_keywords?.length > 0 && (
+                      <div className="keyword-group">
+                        <span className="keyword-group__label">Well-used keywords:</span>
+                        <div className="tag-cloud">
+                          {s.keyword_analysis.well_used_keywords.map((kw, i) => (
+                            <span key={i} className="tag tag--green">{kw}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {s.keyword_analysis.underused_keywords?.length > 0 && (
+                      <div className="keyword-group">
+                        <span className="keyword-group__label">Underused keywords:</span>
+                        <div className="tag-cloud">
+                          {s.keyword_analysis.underused_keywords.map((kw, i) => (
+                            <span key={i} className="tag tag--yellow">{kw}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {s.keyword_analysis.missing_keywords?.length > 0 && (
+                      <div className="keyword-group">
+                        <span className="keyword-group__label">Missing keywords:</span>
+                        <div className="tag-cloud">
+                          {s.keyword_analysis.missing_keywords.map((kw, i) => (
+                            <span key={i} className="tag tag--red">{kw}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Raw keyword match from backend */}
+                {results.keywordStats && (
+                  <div className="card results-section-card">
+                    <h3 className="results-section-title">📋 Keyword Match Details</h3>
+                    <p className="keyword-match-summary">
+                      <strong>{results.keywordStats.matchedCount}</strong> of <strong>{results.keywordStats.totalJdKeywords}</strong> unique JD keywords found in your resume.
+                    </p>
+                    {results.keywordStats.matchedKeywords?.length > 0 && (
+                      <div className="keyword-group">
+                        <span className="keyword-group__label">Matched ({results.keywordStats.matchedCount}):</span>
+                        <div className="tag-cloud">
+                          {results.keywordStats.matchedKeywords.slice(0, 40).map((kw, i) => (
+                            <span key={i} className="tag tag--green">{kw}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {results.keywordStats.missingKeywords?.length > 0 && (
+                      <div className="keyword-group">
+                        <span className="keyword-group__label">Missing ({results.keywordStats.missingCount}):</span>
+                        <div className="tag-cloud">
+                          {results.keywordStats.missingKeywords.slice(0, 40).map((kw, i) => (
+                            <span key={i} className="tag tag--red">{kw}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Tab: Missing Skills ── */}
+            {isStructured && activeTab === "skills" && (
+              <div className="results-tab-panel animate-fade-in">
+                {s.missing_skills?.length > 0 && (
                   <div className="card results-section-card">
                     <h3 className="results-section-title">🔍 Missing Skills</h3>
-                    <ul className="results-list">
-                      {results.suggestions.missing_skills.map((skill, i) => (
-                        <li key={i} className="results-list-item">{skill}</li>
+                    <div className="missing-skills-list">
+                      {s.missing_skills.map((item, i) => (
+                        <div key={i} className="missing-skill-item">
+                          <div className="missing-skill-item__header">
+                            <span className="missing-skill-item__name">
+                              {typeof item === "string" ? item : item.skill}
+                            </span>
+                            {typeof item === "object" && item.priority && (
+                              <span
+                                className="missing-skill-item__priority"
+                                style={{ color: getPriorityColor(item.priority), borderColor: getPriorityColor(item.priority) }}
+                              >
+                                {item.priority}
+                              </span>
+                            )}
+                          </div>
+                          {typeof item === "object" && item.suggestion && (
+                            <p className="missing-skill-item__suggestion">{item.suggestion}</p>
+                          )}
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
+              </div>
+            )}
 
-                {/* Optimization Tips */}
-                {results.suggestions.optimization_tips?.length > 0 && (
+            {/* ── Tab: Optimization Tips ── */}
+            {isStructured && activeTab === "tips" && (
+              <div className="results-tab-panel animate-fade-in">
+                {s.optimization_tips?.length > 0 && (
                   <div className="card results-section-card">
                     <h3 className="results-section-title">💡 Optimization Tips</h3>
-                    <ul className="results-list">
-                      {results.suggestions.optimization_tips.map((tip, i) => (
-                        <li key={i} className="results-list-item">{tip}</li>
+                    <ul className="results-list results-list--tips">
+                      {s.optimization_tips.map((tip, i) => (
+                        <li key={i} className="results-list-item">
+                          <span className="tip-number">{i + 1}</span>
+                          {tip}
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
+              </div>
+            )}
 
-                {/* Bullet Point Improvements */}
-                {results.suggestions.bullet_point_improvements?.length > 0 && (
+            {/* ── Tab: Bullet Point Improvements ── */}
+            {isStructured && activeTab === "bullets" && (
+              <div className="results-tab-panel animate-fade-in">
+                {s.bullet_point_improvements?.length > 0 && (
                   <div className="card results-section-card">
                     <h3 className="results-section-title">✏️ Bullet Point Improvements</h3>
                     <div className="bullet-improvements">
-                      {results.suggestions.bullet_point_improvements.map((item, i) => (
+                      {s.bullet_point_improvements.map((item, i) => (
                         <div key={i} className="bullet-improvement">
                           <div className="bullet-improvement__original">
                             <span className="bullet-label">Original:</span>
                             <p>{item.original}</p>
                           </div>
+                          <div className="bullet-improvement__arrow">→</div>
                           <div className="bullet-improvement__suggested">
-                            <span className="bullet-label">Suggested:</span>
+                            <span className="bullet-label">Improved:</span>
                             <p>{item.suggested}</p>
                           </div>
                           <div className="bullet-improvement__reason">
@@ -330,7 +617,7 @@ const YourResumes = () => {
                     </div>
                   </div>
                 )}
-              </>
+              </div>
             )}
 
             {/* If suggestions came back as raw text (fallback) */}

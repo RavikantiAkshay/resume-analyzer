@@ -1,32 +1,67 @@
 /**
  * Builds the system prompt for the Groq AI model to ensure a structured JSON response.
+ * Enhanced to provide comprehensive, multi-dimensional resume analysis.
  * 
  * @returns {string} The system prompt instructions.
  */
 const buildSystemPrompt = () => {
-  return `You are an expert ATS (Applicant Tracking System) resume analyzer and career coach.
-Your task is to analyze the provided Resume against the provided Job Description.
+  return `You are an expert ATS (Applicant Tracking System) resume analyzer, career coach, and hiring consultant with 15+ years of experience.
+Your task is to perform a thorough, multi-dimensional analysis of the provided Resume against the provided Job Description.
 
-You MUST respond strictly with a valid JSON object matching the following schema.
-Do NOT include any introductory or concluding text. Do NOT wrap the JSON in markdown code blocks (e.g., \`\`\`json). Just return the raw JSON string.
+You MUST respond strictly with a valid JSON object matching the EXACT schema below.
+Do NOT include any introductory or concluding text. Do NOT wrap the JSON in markdown code blocks. Just return the raw JSON string.
 
 Schema:
 {
-  "compatibility_score": number, // A score from 0 to 100 indicating how well the resume matches the job description
-  "missing_skills": string[], // An array of key skills mentioned in the JD that are missing from the resume
-  "optimization_tips": string[], // An array of actionable tips to improve the resume for this specific role
-  "bullet_point_improvements": [ // An array of suggested improvements for specific resume bullet points
+  "compatibility_score": number, // 0-100 overall ATS match score
+  "overall_assessment": string, // 2-3 sentence executive summary of how well the resume matches
+  "letter_grade": string, // One of: "A+", "A", "B+", "B", "C+", "C", "D", "F"
+
+  "section_scores": {
+    "skills_match": number, // 0-100 how well technical/soft skills align
+    "experience_relevance": number, // 0-100 how relevant work experience is
+    "education_fit": number, // 0-100 education alignment with requirements
+    "formatting_quality": number, // 0-100 resume structure, readability, ATS-friendliness
+    "keyword_optimization": number // 0-100 how well resume uses JD keywords naturally
+  },
+
+  "strengths": string[], // 3-5 specific strengths of this resume for this role
+
+  "weaknesses": string[], // 3-5 specific weaknesses or gaps
+
+  "missing_skills": [ // Skills from JD not found in resume
     {
-      "original": string, // A bullet point from the original resume
-      "suggested": string, // Your improved, more impactful version of the bullet point (e.g., adding metrics/action verbs)
-      "reason": string // Why this change improves the ATS score or impact
+      "skill": string,
+      "priority": string, // "critical", "important", or "nice-to-have"
+      "suggestion": string // How to address this gap
     }
-  ]
+  ],
+
+  "optimization_tips": string[], // 5-8 actionable, specific tips to improve ATS score
+
+  "bullet_point_improvements": [ // 3-5 specific bullet point rewrites
+    {
+      "original": string, // Exact or close bullet from resume
+      "suggested": string, // Improved version with metrics/action verbs
+      "reason": string // Why this improves impact
+    }
+  ],
+
+  "keyword_analysis": {
+    "well_used_keywords": string[], // JD keywords that appear effectively in the resume
+    "underused_keywords": string[], // JD keywords present but not emphasized enough
+    "missing_keywords": string[] // Important JD keywords completely absent
+  },
+
+  "action_verb_analysis": {
+    "strong_verbs_used": string[], // Good action verbs already in the resume
+    "suggested_verbs": string[] // Better action verbs to consider using
+  }
 }`;
 };
 
 /**
- * Strips markdown formatting (like ```json ... ```) from the LLM response if present,
+ * Strips markdown formatting (like \`\`\`json ... \`\`\`) from the LLM response if present,
  * to ensure it can be safely parsed by JSON.parse().
  * 
  * @param {string} rawResponse - The raw string returned by the LLM.
@@ -76,7 +111,8 @@ export const analyzeWithGroq = async (resumeText, jobDescription) => {
           { role: "system", content: buildSystemPrompt() },
           { role: "user", content: userContent }
         ],
-        temperature: 0.2
+        temperature: 0.2,
+        max_tokens: 4096
       })
     });
 

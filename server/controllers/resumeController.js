@@ -60,13 +60,20 @@ export const analyzeResume = async (req, res) => {
     const resumeKeywords = extractKeywords(resumeText);
     const jdKeywords = extractKeywords(jobDescription);
 
-    // 2. ATS Score Calculation
+    // 2. Deduplicate for detailed comparison
+    const uniqueJdKeywords = [...new Set(jdKeywords)];
+    const resumeKeywordSet = new Set(resumeKeywords);
+
+    const matchedKeywords = uniqueJdKeywords.filter((kw) => resumeKeywordSet.has(kw));
+    const missingKeywords = uniqueJdKeywords.filter((kw) => !resumeKeywordSet.has(kw));
+
+    // 3. ATS Score Calculation
     const atsScore = calculateATSScore(jdKeywords, resumeKeywords);
 
-    // 3. Groq AI Analysis
+    // 4. Groq AI Analysis
     const suggestions = await analyzeWithGroq(resumeText, jobDescription);
 
-    // 4. Save to Database (Optional but good practice since we have the model)
+    // 5. Save to Database
     const newResume = await Resume.create({
       userId: req.user._id,
       text: resumeText,
@@ -74,11 +81,18 @@ export const analyzeResume = async (req, res) => {
       suggestions,
     });
 
-    // 5. Return Response
+    // 6. Return enriched response
     return res.status(200).json({
       success: true,
       message: "Resume analyzed successfully!",
       atsScore,
+      keywordStats: {
+        totalJdKeywords: uniqueJdKeywords.length,
+        matchedCount: matchedKeywords.length,
+        missingCount: missingKeywords.length,
+        matchedKeywords,
+        missingKeywords,
+      },
       suggestions,
       resumeId: newResume._id,
     });
@@ -91,4 +105,3 @@ export const analyzeResume = async (req, res) => {
     });
   }
 };
-
