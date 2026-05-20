@@ -73,6 +73,50 @@
   padding: 14px 28px;
   font-size: var(--font-base);
   height: 50px;
+  background: linear-gradient(135deg, var(--white) 0%, #e5e5e5 50%, var(--white) 100%);
+  color: var(--black);
+  border: 1px solid var(--white);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  font-weight: var(--weight-semibold);
+  transition: all var(--transition-base);
+}
+
+.auth-submit-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-25deg);
+  transition: 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+}
+
+.auth-submit-btn:hover::after {
+  left: 125%;
+  opacity: 1;
+}
+
+.auth-submit-btn:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Custom premium input focus transitions */
+.input-field {
+  transition: all var(--transition-base);
+}
+
+.input-field:focus {
+  border-color: var(--text-secondary) !important;
+  background: var(--bg-elevated) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05) !important;
 }
 
 .auth-footer {

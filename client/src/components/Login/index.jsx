@@ -148,18 +148,6 @@ const Login = () => {
             <p className="auth-subtitle">Sign in to your account to review resumes</p>
           </div>
 
-          {/* Feedback Banners (Monochrome) */}
-          {error && (
-            <div className="auth-message auth-message--error" id="login-error">
-              <span className="message-bullet">✦</span> {error}
-            </div>
-          )}
-          {success && (
-            <div className="auth-message auth-message--success" id="login-success">
-              <span className="message-bullet">✦</span> {success}
-            </div>
-          )}
-
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="email-input" className="form-label">Email Address</label>
@@ -204,6 +192,18 @@ const Login = () => {
               )}
             </button>
           </form>
+
+          {/* Feedback Banners (Monochrome) */}
+          {error && (
+            <div className="auth-message auth-message--error" id="login-error" style={{ marginTop: "1.5rem" }}>
+              <span className="message-bullet">✦</span> {error}
+            </div>
+          )}
+          {success && (
+            <div className="auth-message auth-message--success" id="login-success" style={{ marginTop: "1.5rem" }}>
+              <span className="message-bullet">✦</span> {success}
+            </div>
+          )}
 
           {/* Google Auth Divider & Button */}
           <div className="auth-separator">

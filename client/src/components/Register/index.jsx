@@ -151,17 +151,7 @@ const Register = () => {
             <p className="auth-subtitle">Join ResumeAI to analyze and optimize your resume</p>
           </div>
 
-          {/* Feedback Banners (Monochrome) */}
-          {error && (
-            <div className="auth-message auth-message--error" id="register-error">
-              <span className="message-bullet">✦</span> {error}
-            </div>
-          )}
-          {success && (
-            <div className="auth-message auth-message--success" id="register-success">
-              <span className="message-bullet">✦</span> {success}
-            </div>
-          )}
+
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-group">
@@ -222,6 +212,18 @@ const Register = () => {
               )}
             </button>
           </form>
+
+          {/* Feedback Banners (Monochrome) */}
+          {error && (
+            <div className="auth-message auth-message--error" id="register-error" style={{ marginTop: "1.5rem" }}>
+              <span className="message-bullet">✦</span> {error}
+            </div>
+          )}
+          {success && (
+            <div className="auth-message auth-message--success" id="register-success" style={{ marginTop: "1.5rem" }}>
+              <span className="message-bullet">✦</span> {success}
+            </div>
+          )}
 
           {/* Google Auth Divider & Button */}
           <div className="auth-separator">
