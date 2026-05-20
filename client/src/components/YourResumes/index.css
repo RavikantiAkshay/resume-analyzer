@@ -1,0 +1,423 @@
+/* ======================================================
+   YOUR RESUMES / DASHBOARD PAGE
+   ====================================================== */
+
+.dashboard-page {
+  min-height: 100vh;
+  padding-top: calc(var(--nav-height) + var(--space-2xl));
+  padding-bottom: var(--space-3xl);
+}
+
+.dashboard-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.dashboard-icon {
+  font-size: var(--font-3xl);
+  color: var(--white);
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.dashboard-title {
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.dashboard-subtitle {
+  color: var(--text-muted);
+  font-size: var(--font-base);
+}
+
+/* ── Progress Bar ── */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: var(--space-xl);
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  transition: all 0.3s ease;
+}
+
+.progress-step--active {
+  border-color: var(--white);
+  background: var(--bg-elevated);
+}
+
+.progress-step--done {
+  border-color: #333;
+  background: var(--bg-elevated);
+  opacity: 0.6;
+}
+
+.progress-step__number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--border-default);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  transition: all 0.3s ease;
+}
+
+.progress-step--active .progress-step__number {
+  background: var(--white);
+  color: var(--black);
+}
+
+.progress-step--done .progress-step__number {
+  background: #444;
+  color: var(--white);
+}
+
+.progress-step__label {
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+  font-weight: var(--weight-medium);
+}
+
+.progress-step--active .progress-step__label {
+  color: var(--white);
+}
+
+.progress-step__connector {
+  width: 32px;
+  height: 1px;
+  background: var(--border-default);
+}
+
+/* ── Dashboard Card ── */
+.dashboard-card {
+  padding: var(--space-xl);
+}
+
+/* ── Error ── */
+.dashboard-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+  font-size: var(--font-sm);
+}
+
+/* ── Dropzone ── */
+.dropzone {
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3xl) var(--space-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: var(--space-lg);
+  background: var(--bg-secondary);
+}
+
+.dropzone:hover,
+.dropzone--active {
+  border-color: var(--white);
+  background: var(--bg-elevated);
+}
+
+.dropzone--has-file {
+  border-color: #444;
+  border-style: solid;
+  background: var(--bg-elevated);
+}
+
+.dropzone__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.dropzone__upload-icon {
+  font-size: 2.5rem;
+  opacity: 0.5;
+}
+
+.dropzone__text {
+  color: var(--text-secondary);
+  font-size: var(--font-base);
+  font-weight: var(--weight-medium);
+}
+
+.dropzone__hint {
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+}
+
+.dropzone__selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.dropzone__file-icon {
+  font-size: 1.5rem;
+}
+
+.dropzone__file-name {
+  color: var(--text-primary);
+  font-weight: var(--weight-semibold);
+  font-size: var(--font-base);
+}
+
+.dropzone__file-size {
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+}
+
+/* ── Action Button ── */
+.dashboard-action-btn {
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--white) 0%, #e5e5e5 50%, var(--white) 100%);
+  color: var(--black);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-action-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+}
+
+.dashboard-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── JD Section ── */
+.jd-section {
+  margin-bottom: var(--space-lg);
+}
+
+.jd-textarea {
+  width: 100%;
+  min-height: 200px;
+  resize: vertical;
+  font-family: var(--font-family);
+  line-height: 1.6;
+}
+
+.dashboard-actions-row {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.dashboard-actions-row .btn-secondary {
+  flex-shrink: 0;
+}
+
+.dashboard-actions-row .dashboard-action-btn {
+  flex: 1;
+}
+
+/* ── Analyzing Spinner ── */
+.analyzing-card {
+  padding: var(--space-3xl);
+}
+
+.analyzing-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.analyzing-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.analyzing-text {
+  color: var(--text-primary);
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+}
+
+.analyzing-hint {
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+}
+
+/* ── Results ── */
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.results-score-card {
+  text-align: center;
+  padding: var(--space-2xl);
+}
+
+.results-score-title {
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-lg);
+}
+
+.score-circle {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.score-value {
+  font-size: 4rem;
+  font-weight: var(--weight-extrabold);
+  color: var(--score-color);
+  line-height: 1;
+}
+
+.score-unit {
+  font-size: var(--font-xl);
+  color: var(--text-muted);
+  font-weight: var(--weight-medium);
+}
+
+.score-verdict {
+  color: var(--text-secondary);
+  font-size: var(--font-base);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ── Section Cards ── */
+.results-section-card {
+  padding: var(--space-xl);
+}
+
+.results-section-title {
+  color: var(--text-primary);
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.results-list-item {
+  color: var(--text-secondary);
+  font-size: var(--font-base);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--border-strong);
+}
+
+.results-raw-text {
+  color: var(--text-secondary);
+  font-size: var(--font-base);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* ── Bullet Improvements ── */
+.bullet-improvements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.bullet-improvement {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.bullet-label {
+  font-size: var(--font-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: var(--weight-bold);
+  color: var(--text-muted);
+}
+
+.bullet-improvement__original p,
+.bullet-improvement__suggested p,
+.bullet-improvement__reason p {
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  margin: var(--space-xs) 0 0 0;
+  line-height: 1.5;
+}
+
+.bullet-improvement__suggested p {
+  color: var(--text-primary);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .dashboard-container {
+    padding: 0 var(--space-md);
+  }
+
+  .progress-step__label {
+    display: none;
+  }
+
+  .dropzone {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .score-value {
+    font-size: 3rem;
+  }
+}
