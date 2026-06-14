@@ -7,20 +7,15 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, [location]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  if (location.pathname === "/your-resumes") {
+    return null; // Dashboard has its own nav
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -31,98 +26,59 @@ const Navbar = () => {
 
   const closeMobile = () => setMobileOpen(false);
 
-  const navLinks = [
-    { path: "/", label: "Home" },
-    { path: "/your-resumes", label: "Analyze" },
-    { path: "/contact", label: "Contact" },
-  ];
-
   return (
-    <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`} id="main-navbar">
-      <div className="navbar__inner container">
-        {/* Logo */}
-        <Link to="/" className="navbar__logo" onClick={closeMobile}>
-          <span className="navbar__logo-icon">◈</span>
-          <span className="navbar__logo-text">ResumeAI</span>
+    <nav className="bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm w-full sticky top-0 z-50 transition-all duration-300">
+      <div className="flex justify-between items-center w-full px-gutter py-sm max-w-container-max mx-auto">
+        <Link to="/" className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface tracking-tight" onClick={closeMobile}>
+          ResumeAI
         </Link>
-
-        {/* Desktop Nav */}
-        <ul className="navbar__links">
-          {navLinks.map((link) => (
-            <li key={link.path}>
-              <Link
-                to={link.path}
-                className={`navbar__link ${location.pathname === link.path ? "navbar__link--active" : ""}`}
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        {/* Auth Buttons */}
-        <div className="navbar__auth">
+        <div className="hidden md:flex space-x-lg items-center">
+          <Link to="/" className={`font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg ${location.pathname === '/' ? 'text-primary font-medium' : ''}`}>Home</Link>
+          <Link to="/contact" className={`font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg ${location.pathname === '/contact' ? 'text-primary font-medium' : ''}`}>Contact</Link>
+          {!isLoggedIn && (
+            <Link to="/login" className="font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg">Login</Link>
+          )}
+          {isLoggedIn && (
+            <Link to="/your-resumes" className="font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg">Dashboard</Link>
+          )}
+        </div>
+        
+        <div className="hidden md:block">
           {isLoggedIn ? (
-            <button className="navbar__auth-btn navbar__auth-btn--logout" onClick={handleLogout} id="logout-btn">
+            <button onClick={handleLogout} className="font-label-md text-label-md bg-[#0f172a] hover:bg-[#00687a] text-white px-6 py-2.5 rounded-lg transition-colors active:scale-95 duration-200">
               Logout
             </button>
           ) : (
-            <>
-              <Link to="/login" className="navbar__auth-btn navbar__auth-btn--login" id="login-btn">
-                Log in
-              </Link>
-              <Link to="/register" className="navbar__auth-btn navbar__auth-btn--register btn btn-primary" id="register-btn">
-                Get Started
-              </Link>
-            </>
+            <Link to="/register" className="font-label-md text-label-md bg-[#0f172a] hover:bg-[#00687a] text-white px-6 py-2.5 rounded-lg transition-colors active:scale-95 duration-200 inline-block">
+              Get Started
+            </Link>
           )}
         </div>
 
-        {/* Mobile Toggle */}
-        <button
-          className={`navbar__hamburger ${mobileOpen ? "navbar__hamburger--open" : ""}`}
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-          id="mobile-menu-toggle"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
+        {/* Mobile Menu Button */}
+        <button className="md:hidden text-on-surface p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+          <span className="material-symbols-outlined" data-icon="menu">menu</span>
         </button>
       </div>
 
       {/* Mobile Menu */}
-      <div className={`navbar__mobile ${mobileOpen ? "navbar__mobile--open" : ""}`}>
-        <ul className="navbar__mobile-links">
-          {navLinks.map((link) => (
-            <li key={link.path}>
-              <Link
-                to={link.path}
-                className={`navbar__mobile-link ${location.pathname === link.path ? "navbar__mobile-link--active" : ""}`}
-                onClick={closeMobile}
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="navbar__mobile-auth">
+      {mobileOpen && (
+        <div className="md:hidden bg-surface border-b border-outline-variant/30 absolute top-full left-0 w-full p-4 flex flex-col space-y-4 shadow-lg">
+          <Link to="/" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Home</Link>
+          <Link to="/contact" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Contact</Link>
           {isLoggedIn ? (
-            <button className="btn btn-secondary" onClick={handleLogout} style={{ width: "100%" }}>
-              Logout
-            </button>
+            <>
+              <Link to="/your-resumes" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Dashboard</Link>
+              <button onClick={handleLogout} className="font-label-md text-label-md bg-[#0f172a] text-white px-6 py-2.5 rounded-lg text-center w-full">Logout</button>
+            </>
           ) : (
             <>
-              <Link to="/login" className="btn btn-secondary" onClick={closeMobile} style={{ width: "100%" }}>
-                Log in
-              </Link>
-              <Link to="/register" className="btn btn-primary" onClick={closeMobile} style={{ width: "100%" }}>
-                Get Started
-              </Link>
+              <Link to="/login" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Login</Link>
+              <Link to="/register" className="font-label-md text-label-md bg-[#0f172a] text-white px-6 py-2.5 rounded-lg text-center w-full" onClick={closeMobile}>Get Started</Link>
             </>
           )}
         </div>
-      </div>
+      )}
     </nav>
   );
 };

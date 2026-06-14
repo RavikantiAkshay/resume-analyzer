@@ -1,67 +1,39 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./index.css";
 
 const Register = () => {
   const navigate = useNavigate();
   const googleBtnRef = useRef(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const API_URL = "http://localhost:5000";
 
-  // Redirect if already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/your-resumes", { replace: true });
   }, [navigate]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    // Clear errors when the user types
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     if (error) setError("");
   };
 
   const handleGoogleCallback = async (response) => {
     const idToken = response.credential;
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
+    setLoading(true); setError(""); setSuccess("");
     try {
       const res = await fetch(`${API_URL}/auth/google`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
-
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Google registration failed.");
-      }
-
-      // Store token in localStorage
+      if (!res.ok) throw new Error(data.message || "Google registration failed.");
       localStorage.setItem("token", data.token);
-      
       setSuccess("Account created and logged in via Google! Redirecting...");
-      
-      // Navigate to /your-resumes after 1 second
-      setTimeout(() => {
-        navigate("/your-resumes");
-      }, 1000);
-
+      setTimeout(() => navigate("/your-resumes"), 1000);
     } catch (err) {
       setError(err.message || "An unexpected error occurred during Google Sign-Up.");
     } finally {
@@ -70,29 +42,15 @@ const Register = () => {
   };
 
   useEffect(() => {
-    // Check if Google script is loaded
     if (window.google) {
       const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
-      
       try {
         window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleGoogleCallback,
-          cancel_on_tap_outside: false,
+          client_id: clientId, callback: handleGoogleCallback, cancel_on_tap_outside: false,
         });
-
-        window.google.accounts.id.renderButton(
-          googleBtnRef.current,
-          { 
-            theme: "dark", 
-            size: "large", 
-            width: 320, 
-            type: "standard",
-            shape: "pill",
-            text: "signup_with", 
-            logo_alignment: "left"
-          }
-        );
+        window.google.accounts.id.renderButton(googleBtnRef.current, { 
+          theme: "dark", size: "large", width: 320, type: "standard", shape: "pill", text: "signup_with", logo_alignment: "left"
+        });
       } catch (err) {
         console.error("Failed to render Google button:", err);
       }
@@ -102,44 +60,19 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { name, email, password } = formData;
-
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      setError("Please fill in all fields.");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
+    if (!name.trim() || !email.trim() || !password.trim()) { setError("Please fill in all fields."); return; }
+    if (password.length < 6) { setError("Password must be at least 6 characters long."); return; }
+    setLoading(true); setError(""); setSuccess("");
     try {
       const response = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to register user.");
-      }
-
+      if (!response.ok) throw new Error(data.message || "Failed to register user.");
       setSuccess("Account created successfully! Redirecting to login...");
       setFormData({ name: "", email: "", password: "" });
-      
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(err.message || "An unexpected error occurred.");
     } finally {
@@ -148,113 +81,52 @@ const Register = () => {
   };
 
   return (
-    <main className="auth-page animate-fade-in" id="register-page">
-      <div className="auth-container">
-        <div className="card auth-card animate-slide-up">
-          <div className="auth-header">
-            <span className="auth-icon">◈</span>
-            <h1 className="heading-md auth-title">Create Account</h1>
-            <p className="auth-subtitle">Join ResumeAI to analyze and optimize your resume</p>
+    <main className="min-h-screen bg-surface flex items-center justify-center p-4" id="register-page">
+      <div className="bg-white rounded-xl p-8 border border-outline-variant/20 shadow-level-2 max-w-md w-full">
+        <div className="text-center mb-8">
+          <span className="material-symbols-outlined text-4xl text-secondary mb-2" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+          <h1 className="font-headline-lg-mobile text-[#0f172a] font-bold mb-2">Create Account</h1>
+          <p className="font-body-md text-on-surface-variant">Join ResumeAI to analyze and optimize your resume</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block font-label-md text-primary mb-1">Full Name</label>
+            <input type="text" name="name" className="w-full p-3 bg-surface border border-outline-variant/40 rounded-lg font-body-md text-primary focus:border-secondary outline-none transition-colors" placeholder="Enter your name" value={formData.name} onChange={handleChange} disabled={loading} required />
           </div>
+          <div>
+            <label className="block font-label-md text-primary mb-1">Email Address</label>
+            <input type="email" name="email" className="w-full p-3 bg-surface border border-outline-variant/40 rounded-lg font-body-md text-primary focus:border-secondary outline-none transition-colors" placeholder="you@example.com" value={formData.email} onChange={handleChange} disabled={loading} required />
+          </div>
+          <div>
+            <label className="block font-label-md text-primary mb-1">Password</label>
+            <input type="password" name="password" className="w-full p-3 bg-surface border border-outline-variant/40 rounded-lg font-body-md text-primary focus:border-secondary outline-none transition-colors" placeholder="Min. 6 characters" value={formData.password} onChange={handleChange} disabled={loading} required />
+          </div>
+          <button type="submit" disabled={loading} className="w-full bg-[#0f172a] hover:bg-[#00687a] text-white font-label-md px-6 py-3 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50">
+            {loading ? <span className="material-symbols-outlined animate-spin">refresh</span> : "Sign Up"}
+          </button>
+        </form>
 
+        {error && <div className="mt-4 p-3 bg-error-container text-error rounded-lg text-sm flex items-center gap-2"><span className="material-symbols-outlined text-sm">error</span>{error}</div>}
+        {success && <div className="mt-4 p-3 bg-[#eff6ff] text-[#3b82f6] rounded-lg text-sm flex items-center gap-2"><span className="material-symbols-outlined text-sm">check_circle</span>{success}</div>}
 
+        <div className="flex items-center my-6">
+          <div className="flex-1 border-t border-outline-variant/30"></div>
+          <span className="px-3 font-caption text-on-surface-variant">or</span>
+          <div className="flex-1 border-t border-outline-variant/30"></div>
+        </div>
 
-          <form className="auth-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="name-input" className="form-label">Full Name</label>
-              <input
-                type="text"
-                id="name-input"
-                name="name"
-                className="input-field"
-                placeholder="Enter your name"
-                value={formData.name}
-                onChange={handleChange}
-                disabled={loading}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="email-input" className="form-label">Email Address</label>
-              <input
-                type="email"
-                id="email-input"
-                name="email"
-                className="input-field"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                disabled={loading}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="password-input" className="form-label">Password</label>
-              <input
-                type="password"
-                id="password-input"
-                name="password"
-                className="input-field"
-                placeholder="Min. 6 characters"
-                value={formData.password}
-                onChange={handleChange}
-                disabled={loading}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="btn btn-primary auth-submit-btn"
-              disabled={loading}
-              id="register-submit-btn"
-            >
-              {loading ? (
-                <span className="btn-spinner"></span>
-              ) : (
-                "Sign Up"
-              )}
-            </button>
-          </form>
-
-          {/* Feedback Banners (Monochrome) */}
-          {error && (
-            <div className="auth-message auth-message--error" id="register-error" style={{ marginTop: "1.5rem" }}>
-              <span className="message-bullet">✦</span> {error}
-            </div>
+        <div className="flex flex-col items-center justify-center">
+          <div ref={googleBtnRef}></div>
+          {(!import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.VITE_GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com") && (
+            <p className="text-[10px] text-error mt-2 text-center">* Configure VITE_GOOGLE_CLIENT_ID in your client .env to enable Google Sign-In.</p>
           )}
-          {success && (
-            <div className="auth-message auth-message--success" id="register-success" style={{ marginTop: "1.5rem" }}>
-              <span className="message-bullet">✦</span> {success}
-            </div>
-          )}
+        </div>
 
-          {/* Google Auth Divider & Button */}
-          <div className="auth-separator">
-            <span className="auth-separator__line"></span>
-            <span className="auth-separator__text">or</span>
-            <span className="auth-separator__line"></span>
-          </div>
-
-          <div className="google-auth-container">
-            <div ref={googleBtnRef} id="google-signup-btn"></div>
-            {(!import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.VITE_GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com") && (
-              <p className="google-config-warning">
-                * Configure VITE_GOOGLE_CLIENT_ID in your client .env to enable Google Sign-In.
-              </p>
-            )}
-          </div>
-
-          <div className="auth-footer">
-            <p>
-              Already have an account?{" "}
-              <Link to="/login" className="auth-link">
-                Log in
-              </Link>
-            </p>
-          </div>
+        <div className="mt-6 text-center">
+          <p className="font-body-md text-on-surface-variant">
+            Already have an account? <Link to="/login" className="text-secondary font-medium hover:underline">Log in</Link>
+          </p>
         </div>
       </div>
     </main>
