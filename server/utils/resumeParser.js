@@ -1,12 +1,13 @@
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Explicitly assign the worker to avoid main-thread blocking
-pdfjsLib.GlobalWorkerOptions.workerSrc = path.resolve(__dirname, "../../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs");
+// Converts absolute path to file:// URL (required by ESM loader on Windows)
+pdfjsLib.GlobalWorkerOptions.workerSrc = pathToFileURL(path.resolve(__dirname, "../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs")).href;
 
 /**
  * Parses an uploaded PDF resume buffer and extracts all raw text content.
