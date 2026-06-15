@@ -32,6 +32,7 @@ const YourResumes = () => {
       const res = await fetch(`${API_URL}/resume/history`, {
         headers: { Authorization: `Bearer ${getToken()}` },
       });
+      if (res.status === 401) { handleLogout(); return; }
       const data = await res.json();
       if (res.ok && data.success) {
         setHistory(data.history);
@@ -80,6 +81,7 @@ const YourResumes = () => {
         headers: { Authorization: `Bearer ${getToken()}` },
         body: formData,
       });
+      if (res.status === 401) { handleLogout(); return; }
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Upload failed.");
@@ -103,6 +105,7 @@ const YourResumes = () => {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
         body: JSON.stringify({ resumeText, jobDescription, industry }),
       });
+      if (res.status === 401) { handleLogout(); return; }
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Analysis failed.");
