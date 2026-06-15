@@ -210,6 +210,24 @@ const Builder = () => {
     setActiveResume({ ...activeResume, skills: skillsArray });
   };
 
+  const addCustomSection = () => {
+    setActiveResume({
+      ...activeResume,
+      customSections: [...(activeResume.customSections || []), { title: "New Section", body: "" }]
+    });
+  };
+
+  const updateCustomSection = (index, field, value) => {
+    const updated = [...(activeResume.customSections || [])];
+    updated[index][field] = value;
+    setActiveResume({ ...activeResume, customSections: updated });
+  };
+
+  const deleteCustomSection = (index) => {
+    const updated = activeResume.customSections.filter((_, i) => i !== index);
+    setActiveResume({ ...activeResume, customSections: updated });
+  };
+
   return (
     <div className="flex h-screen overflow-hidden font-body-md text-body-md bg-surface text-on-surface">
       {/* SideNavBar (Same as Dashboard) */}
@@ -278,16 +296,18 @@ const Builder = () => {
           </div>
         </header>
 
-        <div className="flex-grow overflow-y-auto p-md lg:p-lg bg-surface">
-          <div className="max-w-4xl mx-auto">
-            {error && (
-              <div className="bg-error-container text-on-error-container p-4 rounded-lg mb-6 flex items-center gap-3">
+        <div className="flex-grow flex flex-col h-full bg-surface-container-lowest">
+          {error && (
+            <div className="max-w-4xl mx-auto w-full mt-4">
+              <div className="bg-error-container text-on-error-container p-4 rounded-lg flex items-center gap-3">
                 <span className="material-symbols-outlined">error</span><span className="font-body-md">{error}</span>
               </div>
-            )}
+            </div>
+          )}
 
-            {!activeResume ? (
-              <div className="flex flex-col items-center justify-center h-full mt-24 text-center">
+          {!activeResume ? (
+            <div className="flex-grow overflow-y-auto p-md lg:p-lg bg-surface">
+              <div className="max-w-4xl mx-auto flex flex-col items-center justify-center h-full mt-24 text-center">
                 <span className="material-symbols-outlined text-6xl text-secondary mb-6">edit_document</span>
                 <h2 className="font-headline-lg text-primary mb-4">Let's Build Your Resume</h2>
                 <div className="flex gap-4">
@@ -300,10 +320,11 @@ const Builder = () => {
                   <input type="file" accept=".pdf" ref={fileInputRef} onChange={handleFileUpload} hidden />
                 </div>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 h-[calc(100vh-140px)] overflow-hidden">
-                {/* Editor Panel */}
-                <div className="bg-white rounded-xl border border-outline-variant/20 shadow-level-1 overflow-hidden flex flex-col h-full">
+            </div>
+          ) : (
+            <div className="flex-grow flex flex-row h-full overflow-hidden w-full">
+              {/* Editor Panel */}
+              <div className="w-full xl:w-[45%] bg-white border-r border-outline-variant/30 flex flex-col h-full relative">
                   <div className="bg-surface-container-low p-md border-b border-outline-variant/20 flex justify-between items-center sticky top-0 z-10 flex-shrink-0">
                     <input 
                       type="text" 
@@ -420,12 +441,37 @@ const Builder = () => {
                       </div>
                     </section>
 
+                    {/* Custom Sections */}
+                    <section>
+                      <div className="flex justify-between items-center mb-4 border-b border-outline-variant/30 pb-2 mt-8">
+                        <h3 className="font-title-lg text-primary">Custom Sections</h3>
+                        <button onClick={addCustomSection} className="text-secondary flex items-center gap-1 font-label-md"><span className="material-symbols-outlined text-sm">add</span> Add</button>
+                      </div>
+                      <div className="flex flex-col gap-6">
+                        {activeResume.customSections?.map((section, i) => (
+                          <div key={i} className="p-4 bg-surface-container-lowest border border-outline-variant/20 rounded-lg">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="w-full pr-4"><label className="block text-xs font-bold text-on-surface-variant mb-1">Section Title</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-white" value={section.title || ""} onChange={e => updateCustomSection(i, "title", e.target.value)} /></div>
+                              <button onClick={() => deleteCustomSection(i)} className="text-error mt-6"><span className="material-symbols-outlined">delete</span></button>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-on-surface-variant mb-1">Description</label>
+                              <textarea rows="4" className="w-full p-2 border border-outline-variant/40 rounded bg-white" placeholder="Write the content for this section..." value={section.body || ""} onChange={e => updateCustomSection(i, "body", e.target.value)} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+
                   </div>
                 </div>
 
                 {/* Live Preview Panel - Modern 2-Column Professional Design */}
-                <div className="bg-[#f0f0f0] rounded-xl border border-outline-variant/20 shadow-level-1 overflow-hidden hidden xl:flex flex-col h-full items-center py-4">
-                  <div className="bg-white w-full max-w-[8.5in] aspect-[8.5/11] shadow-md overflow-hidden flex flex-col font-sans" style={{ transform: "scale(0.85)", transformOrigin: "top center" }}>
+                <div className="bg-[#525659] hidden xl:flex xl:w-[55%] flex-col h-full items-center py-8 overflow-y-auto">
+                  
+                  {/* Fixed scaling wrapper to prevent text breaking and layout shifting */}
+                  <div className="relative" style={{ width: "571px", height: "739px" }}>
+                    <div className="absolute top-0 left-0 bg-white shadow-2xl flex flex-col font-sans shrink-0 w-[816px] min-h-[1056px] origin-top-left transform scale-[0.7]">
                     
                     {/* Header Top Bar */}
                     <div className="bg-[#2b3a4a] text-white p-8">
@@ -511,21 +557,28 @@ const Builder = () => {
                                       {exp.bullets.map((b, bIdx) => b.trim() && <li key={bIdx} className="pl-1">{b}</li>)}
                                     </ul>
                                   ) : (
-                                    <p className="text-gray-400 text-xs italic">{exp.description || "Generate STAR bullets to see them here."}</p>
+                                    <p className="text-gray-400 text-xs italic whitespace-pre-wrap">{exp.description || "Generate STAR bullets to see them here."}</p>
                                   )}
                                 </div>
                               ))}
                             </div>
                           </div>
                         )}
+
+                        {/* Custom Sections */}
+                        {activeResume.customSections?.map((section, i) => section.title && section.body && (
+                          <div key={i} className="mt-2">
+                            <h2 className="text-[#2b3a4a] font-bold tracking-widest uppercase border-b-2 border-gray-200 pb-1 mb-4 text-lg">{section.title}</h2>
+                            <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">{section.body}</p>
+                          </div>
+                        ))}
                       </div>
-                      
                     </div>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

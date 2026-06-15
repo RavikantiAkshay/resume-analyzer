@@ -48,6 +48,7 @@ const resumeBuilderSchema = new mongoose.Schema({
   projects: [projectSchema],
   skills: { type: [String], default: [] },
   certifications: [{ title: String, issuer: String, date: String }],
+  customSections: [{ title: String, body: String }],
   
 }, { timestamps: true });
 

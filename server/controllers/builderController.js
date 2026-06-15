@@ -7,7 +7,7 @@ import { generateStarBullets, parseResumeToStructuredData } from "../utils/build
 const sanitizeSections = (sections) => {
   if (!sections) return sections;
   const cleaned = { ...sections };
-  const arrayFields = ['experience', 'education', 'projects', 'certifications'];
+  const arrayFields = ['experience', 'education', 'projects', 'certifications', 'customSections'];
   
   arrayFields.forEach(field => {
     if (cleaned[field] && Array.isArray(cleaned[field])) {
