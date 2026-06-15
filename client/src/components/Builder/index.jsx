@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import html2pdf from "html2pdf.js";
 
 const API_URL = "http://localhost:5000";
 
@@ -228,6 +229,27 @@ const Builder = () => {
     setActiveResume({ ...activeResume, customSections: updated });
   };
 
+  const handleDownloadPDF = () => {
+    const element = document.getElementById('resume-preview-pdf');
+    if (!element) return;
+    
+    // Temporarily remove scaling for crisp 1:1 PDF generation
+    element.classList.remove('transform', 'scale-[0.7]');
+    
+    const opt = {
+      margin:       0,
+      filename:     `${activeResume.personalInfo?.fullName || 'resume'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(element).save().then(() => {
+      // Restore scaling after generation
+      element.classList.add('transform', 'scale-[0.7]');
+    });
+  };
+
   return (
     <div className="flex h-screen overflow-hidden font-body-md text-body-md bg-surface text-on-surface">
       {/* SideNavBar (Same as Dashboard) */}
@@ -336,6 +358,9 @@ const Builder = () => {
                       className="bg-transparent font-headline-md text-primary font-bold outline-none border-b border-transparent focus:border-secondary w-full max-w-[200px]" 
                     />
                     <div className="flex gap-2">
+                      <button onClick={handleDownloadPDF} className="bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-label-md flex items-center gap-2">
+                        <span className="material-symbols-outlined text-sm">download</span> Download PDF
+                      </button>
                       <button onClick={saveResume} disabled={loading} className="bg-[#00687a] hover:bg-[#005161] text-white px-4 py-2 rounded-lg font-label-md flex items-center gap-2">
                         {loading ? <span className="material-symbols-outlined animate-spin">refresh</span> : <><span className="material-symbols-outlined text-sm">save</span> Save</>}
                       </button>
@@ -351,6 +376,8 @@ const Builder = () => {
                         <div><label className="block text-xs font-bold text-on-surface-variant mb-1">Email</label><input type="email" className="w-full p-2 border border-outline-variant/40 rounded bg-surface" value={activeResume.personalInfo?.email || ""} onChange={e => updatePersonalInfo("email", e.target.value)} /></div>
                         <div><label className="block text-xs font-bold text-on-surface-variant mb-1">Phone</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-surface" value={activeResume.personalInfo?.phone || ""} onChange={e => updatePersonalInfo("phone", e.target.value)} /></div>
                         <div><label className="block text-xs font-bold text-on-surface-variant mb-1">LinkedIn</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-surface" value={activeResume.personalInfo?.linkedin || ""} onChange={e => updatePersonalInfo("linkedin", e.target.value)} /></div>
+                        <div><label className="block text-xs font-bold text-on-surface-variant mb-1">GitHub</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-surface" value={activeResume.personalInfo?.github || ""} onChange={e => updatePersonalInfo("github", e.target.value)} /></div>
+                        <div><label className="block text-xs font-bold text-on-surface-variant mb-1">Portfolio</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-surface" value={activeResume.personalInfo?.portfolio || ""} onChange={e => updatePersonalInfo("portfolio", e.target.value)} /></div>
                       </div>
                     </section>
 
@@ -446,9 +473,22 @@ const Builder = () => {
 
                     {/* Custom Sections */}
                     <section>
-                      <div className="flex justify-between items-center mb-4 border-b border-outline-variant/30 pb-2 mt-8">
+                      <div className="flex justify-between items-center mb-2 border-b border-outline-variant/30 pb-2 mt-8">
                         <h3 className="font-title-lg text-primary">Custom Sections</h3>
                         <button onClick={addCustomSection} className="text-secondary flex items-center gap-1 font-label-md"><span className="material-symbols-outlined text-sm">add</span> Add</button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="text-xs text-gray-500 flex items-center font-bold">Suggestions:</span>
+                        {['Projects', 'Languages', 'Certifications', 'Awards'].map(suggestion => (
+                          <button key={suggestion} onClick={() => {
+                            setActiveResume({
+                              ...activeResume,
+                              customSections: [...(activeResume.customSections || []), { title: suggestion, body: "" }]
+                            });
+                          }} className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded border border-gray-200 transition-colors">
+                            + {suggestion}
+                          </button>
+                        ))}
                       </div>
                       <div className="flex flex-col gap-6">
                         {activeResume.customSections?.map((section, i) => (
@@ -474,7 +514,7 @@ const Builder = () => {
                   
                   {/* Fixed scaling wrapper to prevent text breaking and layout shifting */}
                   <div className="relative" style={{ width: "571px", height: "739px" }}>
-                    <div className="absolute top-0 left-0 bg-white shadow-2xl flex flex-col font-sans shrink-0 w-[816px] min-h-[1056px] origin-top-left transform scale-[0.7]">
+                    <div id="resume-preview-pdf" className="absolute top-0 left-0 bg-white shadow-2xl flex flex-col font-sans shrink-0 w-[816px] min-h-[1056px] origin-top-left transform scale-[0.7]">
                     
                     {/* Header Top Bar */}
                     <div className="bg-[#2b3a4a] text-white p-8">
@@ -493,6 +533,7 @@ const Builder = () => {
                             {activeResume.personalInfo?.phone && <div className="flex items-start break-all"><strong>Phone:</strong> <br/>{activeResume.personalInfo.phone}</div>}
                             {activeResume.personalInfo?.email && <div className="flex items-start break-all"><strong>Email:</strong> <br/>{activeResume.personalInfo.email}</div>}
                             {activeResume.personalInfo?.linkedin && <div className="flex items-start break-all"><strong>LinkedIn:</strong> <br/>{activeResume.personalInfo.linkedin}</div>}
+                            {activeResume.personalInfo?.github && <div className="flex items-start break-all"><strong>GitHub:</strong> <br/>{activeResume.personalInfo.github}</div>}
                             {activeResume.personalInfo?.portfolio && <div className="flex items-start break-all"><strong>Portfolio:</strong> <br/>{activeResume.personalInfo.portfolio}</div>}
                           </div>
                         </div>

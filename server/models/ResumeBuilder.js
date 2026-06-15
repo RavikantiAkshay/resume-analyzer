@@ -40,6 +40,7 @@ const resumeBuilderSchema = new mongoose.Schema({
     location: { type: String, default: "" },
     linkedin: { type: String, default: "" },
     portfolio: { type: String, default: "" },
+    github: { type: String, default: "" },
     summary: { type: String, default: "" }
   },
 
