@@ -205,8 +205,8 @@ const Builder = () => {
   };
 
   const updateSkills = (skillsString) => {
-    // split by comma and map to array
-    const skillsArray = skillsString.split(',').map(s => s.trim()).filter(s => s);
+    // split by comma and map to array without filtering out empty strings to preserve trailing commas during typing
+    const skillsArray = skillsString.split(',').map(s => s.trimStart());
     setActiveResume({ ...activeResume, skills: skillsArray });
   };
 
@@ -306,16 +306,19 @@ const Builder = () => {
           )}
 
           {!activeResume ? (
-            <div className="flex-grow overflow-y-auto p-md lg:p-lg bg-surface">
-              <div className="max-w-4xl mx-auto flex flex-col items-center justify-center h-full mt-24 text-center">
-                <span className="material-symbols-outlined text-6xl text-secondary mb-6">edit_document</span>
-                <h2 className="font-headline-lg text-primary mb-4">Let's Build Your Resume</h2>
-                <div className="flex gap-4">
-                  <button onClick={createEmptyResume} className="bg-[#00687a] text-white px-6 py-3 rounded-lg font-label-md flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">add</span> Start from Scratch
+            <div className="flex-grow flex items-center justify-center p-md lg:p-lg bg-[#f0f4f8]">
+              <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl border border-outline-variant/10 p-12 flex flex-col items-center text-center transform transition-all hover:scale-[1.01] duration-300">
+                <div className="bg-surface-container-low w-24 h-24 rounded-full flex items-center justify-center mb-8 shadow-sm">
+                  <span className="material-symbols-outlined text-5xl text-[#00687a]">edit_document</span>
+                </div>
+                <h2 className="text-4xl font-bold text-gray-800 mb-4 tracking-tight">Let's Build Your Resume</h2>
+                <p className="text-gray-500 mb-10 text-lg max-w-lg">Create a professional, ATS-friendly resume from scratch or auto-fill your details using an existing PDF.</p>
+                <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                  <button onClick={createEmptyResume} className="bg-gradient-to-r from-[#00687a] to-[#005161] hover:from-[#005161] hover:to-[#004250] text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5">
+                    <span className="material-symbols-outlined">add</span> Start from Scratch
                   </button>
-                  <button onClick={() => fileInputRef.current?.click()} className="bg-surface-container border border-outline-variant/40 px-6 py-3 rounded-lg font-label-md flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">upload</span> Auto-Fill from PDF
+                  <button onClick={() => fileInputRef.current?.click()} className="bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-sm transition-all hover:-translate-y-0.5">
+                    <span className="material-symbols-outlined">upload</span> Auto-Fill from PDF
                   </button>
                   <input type="file" accept=".pdf" ref={fileInputRef} onChange={handleFileUpload} hidden />
                 </div>
@@ -515,7 +518,7 @@ const Builder = () => {
                           <div>
                             <h2 className="text-[#2b3a4a] font-bold tracking-widest uppercase border-b-2 border-[#2b3a4a] pb-1 mb-4 text-sm">Skills</h2>
                             <ul className="list-none flex flex-col gap-1 text-sm text-gray-700">
-                              {activeResume.skills.map((skill, i) => (
+                              {activeResume.skills.map((skill, i) => skill.trim() && (
                                 <li key={i} className="flex items-center gap-2">
                                   <span className="w-1.5 h-1.5 bg-[#2b3a4a] rounded-full"></span>
                                   <span>{skill}</span>
