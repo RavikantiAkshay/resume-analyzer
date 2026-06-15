@@ -165,12 +165,12 @@ const Home = () => {
             </div>
           </div>
           
-          <div className="md:col-span-4 bg-white rounded-xl p-8 border border-outline-variant/20 shadow-level-1 hover:shadow-level-2 transition-shadow flex flex-col justify-center">
+          <div className="md:col-span-4 bg-white rounded-xl p-8 border border-outline-variant/20 shadow-level-1 hover:shadow-level-2 transition-shadow flex flex-col justify-center relative overflow-hidden">
             <div className="bg-primary-container/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-              <span className="material-symbols-outlined text-[#0f172a]" data-icon="view_list">view_list</span>
+              <span className="material-symbols-outlined text-[#0f172a]" data-icon="edit_document">edit_document</span>
             </div>
-            <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">AI Bullet Rewrites</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm">Get specific, tailored suggestions to improve your bullet points using strong action verbs.</p>
+            <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">Resume Builder & AI</h3>
+            <p className="font-body-md text-body-md text-on-surface-variant text-sm">Use our live-preview Builder to craft your resume. One click instantly converts raw experience into high-impact STAR bullets.</p>
           </div>
           
           <div className="md:col-span-5 bg-[#0f172a] rounded-xl p-8 border border-outline-variant/20 shadow-level-2 flex flex-col justify-center text-white relative overflow-hidden">

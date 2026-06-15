@@ -19,12 +19,14 @@ export const generateStarBullets = async (rawExperience) => {
 Your task is to take the user's raw experience description and convert it into 3 to 5 high-impact, professional STAR-method (Situation, Task, Action, Result) bullet points.
 Start with a strong action verb, include specific metrics if possible, and highlight the impact.
 
-You MUST respond strictly with a valid JSON array of strings, like this:
-[
-  "Engineered a scalable data pipeline...",
-  "Optimized database queries, reducing load times by 40%...",
-  "Led a team of 5 developers..."
-]`;
+You MUST respond strictly with a valid JSON object with a "bullets" key containing an array of strings, like this:
+{
+  "bullets": [
+    "Engineered a scalable data pipeline...",
+    "Optimized database queries, reducing load times by 40%...",
+    "Led a team of 5 developers..."
+  ]
+}`;
 
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -37,14 +39,16 @@ You MUST respond strictly with a valid JSON array of strings, like this:
           { role: "user", content: `Raw Experience:\n${rawExperience}` }
         ],
         temperature: 0.3,
-        max_tokens: 1024
+        max_tokens: 1024,
+        response_format: { type: "json_object" }
       })
     });
     
     if (!response.ok) throw new Error("Groq API error");
     const data = await response.json();
     const rawContent = data.choices[0]?.message?.content || "";
-    return JSON.parse(stripMarkdown(rawContent));
+    const parsed = JSON.parse(stripMarkdown(rawContent));
+    return parsed.bullets || [];
   } catch (error) {
     console.error("generateStarBullets error:", error);
     throw error;
@@ -124,7 +128,8 @@ Schema:
           { role: "user", content: `Resume Text:\n${resumeText}` }
         ],
         temperature: 0.1, // very low temp for strict JSON extraction
-        max_tokens: 4096
+        max_tokens: 4096,
+        response_format: { type: "json_object" }
       })
     });
     
