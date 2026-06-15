@@ -6,7 +6,10 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Helper to generate JWT Token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || "fallback_secret_key_12345", {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("FATAL ERROR: JWT_SECRET is not defined.");
+  }
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 };

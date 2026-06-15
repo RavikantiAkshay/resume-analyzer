@@ -16,8 +16,12 @@ export const protect = async (req, res, next) => {
       // Extract the token part
       token = req.headers.authorization.split(" ")[1];
 
+      if (!process.env.JWT_SECRET) {
+        throw new Error("FATAL ERROR: JWT_SECRET is not defined.");
+      }
+
       // Verify token signature and expiration
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback_secret_key_12345");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Fetch user from DB excluding the password and attach to request
       req.user = await User.findById(decoded.id).select("-password");

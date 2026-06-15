@@ -11,6 +11,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust reverse proxy for accurate IP tracking in Rate Limiting
+app.set("trust proxy", 1);
+
 // Middleware
 app.use(cors({
   origin: "http://localhost:5173", // Allow requests from our Vite frontend
