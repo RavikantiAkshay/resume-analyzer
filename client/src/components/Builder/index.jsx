@@ -150,7 +150,7 @@ const Builder = () => {
     }
   };
 
-  const generateBullets = async (rawText, expIndex) => {
+  const generateBullets = async (rawText, index, sectionType = "experience") => {
     if (!rawText) return;
     setLoading(true);
     try {
@@ -161,9 +161,9 @@ const Builder = () => {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        const updatedExp = [...activeResume.experience];
-        updatedExp[expIndex].bullets = data.data;
-        setActiveResume({ ...activeResume, experience: updatedExp });
+        const updatedSection = [...activeResume[sectionType]];
+        updatedSection[index].bullets = data.data;
+        setActiveResume({ ...activeResume, [sectionType]: updatedSection });
       }
     } catch (err) {
       console.error(err);
@@ -190,6 +190,19 @@ const Builder = () => {
     const updated = [...activeResume.experience];
     updated[index][field] = value;
     setActiveResume({ ...activeResume, experience: updated });
+  };
+
+  const addProject = () => {
+    setActiveResume({
+      ...activeResume,
+      projects: [...(activeResume.projects || []), { title: "", link: "", description: "", bullets: [] }]
+    });
+  };
+
+  const updateProject = (index, field, value) => {
+    const updated = [...(activeResume.projects || [])];
+    updated[index][field] = value;
+    setActiveResume({ ...activeResume, projects: updated });
   };
 
   const addEducation = () => {
@@ -432,6 +445,57 @@ const Builder = () => {
                       </div>
                     </section>
 
+                    {/* Projects */}
+                    <section>
+                      <div className="flex justify-between items-center mb-4 border-b border-outline-variant/30 pb-2">
+                        <h3 className="font-title-lg text-primary">Projects</h3>
+                        <button onClick={addProject} className="text-secondary flex items-center gap-1 font-label-md"><span className="material-symbols-outlined text-sm">add</span> Add</button>
+                      </div>
+                      
+                      <div className="flex flex-col gap-6">
+                        {activeResume.projects?.map((proj, i) => (
+                          <div key={i} className="p-4 bg-surface-container-lowest border border-outline-variant/20 rounded-lg">
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div><label className="block text-xs font-bold text-on-surface-variant mb-1">Project Title</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-white" value={proj.title || ""} onChange={e => updateProject(i, "title", e.target.value)} /></div>
+                              <div><label className="block text-xs font-bold text-on-surface-variant mb-1">Link</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-white" value={proj.link || ""} onChange={e => updateProject(i, "link", e.target.value)} /></div>
+                            </div>
+                            
+                            <div className="mb-4">
+                              <label className="block text-xs font-bold text-secondary mb-1">Raw Description (What did the project do?)</label>
+                              <textarea rows="3" className="w-full p-2 border border-outline-variant/40 rounded bg-white mb-2" placeholder="e.g. Built a full stack app using React and Node that helps people..." value={proj.description || ""} onChange={e => updateProject(i, "description", e.target.value)} />
+                              <button onClick={() => generateBullets(proj.description, i, "projects")} disabled={loading || !proj.description} className="bg-primary-container text-on-primary-container px-4 py-2 rounded font-label-md flex items-center gap-2 disabled:opacity-50">
+                                <span className="material-symbols-outlined text-sm">auto_awesome</span> Generate STAR Bullets
+                              </button>
+                            </div>
+                            
+                            {proj.bullets && proj.bullets.length > 0 && (
+                              <div className="bg-white p-4 rounded border border-outline-variant/30">
+                                <label className="block text-xs font-bold text-on-surface-variant mb-2">Final Bullet Points</label>
+                                <ul className="list-disc pl-5 space-y-2">
+                                  {proj.bullets.map((b, bIdx) => (
+                                    <li key={bIdx} className="text-sm text-primary flex gap-2">
+                                      <input type="text" className="w-full bg-transparent border-b border-transparent hover:border-outline-variant/50 focus:border-secondary outline-none" value={b} onChange={e => {
+                                        const newBullets = [...proj.bullets];
+                                        newBullets[bIdx] = e.target.value;
+                                        updateProject(i, "bullets", newBullets);
+                                      }} />
+                                      <button onClick={() => {
+                                        const newBullets = proj.bullets.filter((_, idx) => idx !== bIdx);
+                                        updateProject(i, "bullets", newBullets);
+                                      }} className="text-on-surface-variant hover:text-error"><span className="material-symbols-outlined text-sm">close</span></button>
+                                    </li>
+                                  ))}
+                                </ul>
+                                <button onClick={() => updateProject(i, "bullets", [...proj.bullets, ""])} className="mt-2 text-xs font-bold text-secondary flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-xs">add</span> Add Bullet
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+
                     {/* Education */}
                     <section>
                       <div className="flex justify-between items-center mb-4 border-b border-outline-variant/30 pb-2">
@@ -479,7 +543,7 @@ const Builder = () => {
                       </div>
                       <div className="flex flex-wrap gap-2 mb-4">
                         <span className="text-xs text-gray-500 flex items-center font-bold">Suggestions:</span>
-                        {['Projects', 'Languages', 'Certifications', 'Awards'].map(suggestion => (
+                        {['Languages', 'Certifications', 'Awards'].map(suggestion => (
                           <button key={suggestion} onClick={() => {
                             setActiveResume({
                               ...activeResume,
@@ -602,6 +666,33 @@ const Builder = () => {
                                     </ul>
                                   ) : (
                                     <p className="text-gray-400 text-xs italic whitespace-pre-wrap">{exp.description || "Generate STAR bullets to see them here."}</p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Projects */}
+                        {activeResume.projects && activeResume.projects.length > 0 && (
+                          <div>
+                            <h2 className="text-[#2b3a4a] font-bold tracking-widest uppercase border-b-2 border-gray-200 pb-1 mb-4 text-lg">Projects</h2>
+                            <div className="flex flex-col gap-5">
+                              {activeResume.projects.map((proj, i) => (
+                                <div key={i}>
+                                  <div className="flex justify-between items-baseline mb-1">
+                                    <h3 className="font-bold text-gray-800 text-base">{proj.title || "Project Name"}</h3>
+                                    <span className="text-xs font-semibold text-[#2b3a4a] whitespace-nowrap ml-4">
+                                      {proj.link && <a href={proj.link} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{proj.link}</a>}
+                                    </span>
+                                  </div>
+                                  
+                                  {proj.bullets && proj.bullets.length > 0 ? (
+                                    <ul className="list-disc pl-4 text-gray-700 text-sm space-y-1.5 marker:text-gray-400">
+                                      {proj.bullets.map((b, bIdx) => b.trim() && <li key={bIdx} className="pl-1">{b}</li>)}
+                                    </ul>
+                                  ) : (
+                                    <p className="text-gray-400 text-xs italic whitespace-pre-wrap">{proj.description || "Generate STAR bullets to see them here."}</p>
                                   )}
                                 </div>
                               ))}
