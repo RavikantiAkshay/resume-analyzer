@@ -2,11 +2,12 @@
  * Builds the system prompt for the Groq AI model to ensure a structured JSON response.
  * Enhanced to provide comprehensive, multi-dimensional resume analysis.
  * 
+ * @param {string} industry - Target industry for context.
  * @returns {string} The system prompt instructions.
  */
-const buildSystemPrompt = () => {
-  return `You are an expert ATS (Applicant Tracking System) resume analyzer, career coach, and hiring consultant with 15+ years of experience.
-Your task is to perform a thorough, multi-dimensional analysis of the provided Resume against the provided Job Description.
+const buildSystemPrompt = (industry = "General") => {
+  return `You are an expert ATS (Applicant Tracking System) resume analyzer, career coach, and hiring consultant with 15+ years of experience specializing in the "${industry}" sector.
+Your task is to perform a thorough, multi-dimensional analysis of the provided Resume against the provided Job Description. You must heavily weigh the specific technical jargon, standards, and expectations of the ${industry} industry.
 
 You MUST respond strictly with a valid JSON object matching the EXACT schema below.
 Do NOT include any introductory or concluding text. Do NOT wrap the JSON in markdown code blocks. Just return the raw JSON string.
@@ -87,9 +88,10 @@ const stripMarkdown = (rawResponse) => {
  * 
  * @param {string} resumeText - The extracted text of the user's resume.
  * @param {string} jobDescription - The target job description text.
+ * @param {string} industry - The target industry.
  * @returns {Promise<Object|string>} The parsed JSON analysis, or the raw text if JSON parsing fails.
  */
-export const analyzeWithGroq = async (resumeText, jobDescription) => {
+export const analyzeWithGroq = async (resumeText, jobDescription, industry = "General") => {
   const apiKey = process.env.GROQ_API_KEY;
   
   if (!apiKey) {
@@ -108,7 +110,7 @@ export const analyzeWithGroq = async (resumeText, jobDescription) => {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: buildSystemPrompt() },
+          { role: "system", content: buildSystemPrompt(industry) },
           { role: "user", content: userContent }
         ],
         temperature: 0.2,

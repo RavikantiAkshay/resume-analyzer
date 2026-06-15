@@ -1,5 +1,5 @@
 import express from "express";
-import { uploadResume, analyzeResume } from "../controllers/resumeController.js";
+import { uploadResume, analyzeResume, getResumeHistory } from "../controllers/resumeController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { upload } from "../middleware/upload.js";
 
@@ -12,5 +12,9 @@ router.post("/upload", protect, upload.single("resume"), uploadResume);
 // Route: Analyze resume text against a job description
 // POST /resume/analyze
 router.post("/analyze", protect, analyzeResume);
+
+// Route: Get history of past resume analyses
+// GET /resume/history
+router.get("/history", protect, getResumeHistory);
 
 export default router;

@@ -47,7 +47,7 @@ export const uploadResume = async (req, res) => {
  */
 export const analyzeResume = async (req, res) => {
   try {
-    const { resumeText, jobDescription } = req.body;
+    const { resumeText, jobDescription, industry } = req.body;
 
     if (!resumeText || !jobDescription) {
       return res.status(400).json({
@@ -71,7 +71,8 @@ export const analyzeResume = async (req, res) => {
     const atsScore = calculateATSScore(jdKeywords, resumeKeywords);
 
     // 4. Groq AI Analysis
-    const suggestions = await analyzeWithGroq(resumeText, jobDescription);
+    const targetIndustry = industry || "General";
+    const suggestions = await analyzeWithGroq(resumeText, jobDescription, targetIndustry);
 
     // 5. Save to Database
     const newResume = await Resume.create({
@@ -101,6 +102,28 @@ export const analyzeResume = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to analyze the resume.",
+      error: err.message,
+    });
+  }
+};
+
+/**
+ * Controller to fetch resume analysis history
+ * GET /resume/history
+ */
+export const getResumeHistory = async (req, res) => {
+  try {
+    const resumes = await Resume.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    return res.status(200).json({
+      success: true,
+      count: resumes.length,
+      history: resumes,
+    });
+  } catch (err) {
+    console.error("Fetch History Controller Error:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch resume history.",
       error: err.message,
     });
   }

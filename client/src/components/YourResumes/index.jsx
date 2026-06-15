@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import html2pdf from "html2pdf.js";
 
 const API_URL = "http://localhost:5000";
 
@@ -9,14 +10,38 @@ const YourResumes = () => {
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [jobDescription, setJobDescription] = useState("");
+  const [industry, setIndustry] = useState("Technology / Software");
   const [resumeText, setResumeText] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState("upload"); // "upload" | "jd" | "analyzing" | "results"
   const [error, setError] = useState("");
   const [results, setResults] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const getToken = () => localStorage.getItem("token");
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  const fetchHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/resume/history`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setHistory(data.history);
+      }
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -76,7 +101,7 @@ const YourResumes = () => {
       const res = await fetch(`${API_URL}/resume/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
-        body: JSON.stringify({ resumeText, jobDescription }),
+        body: JSON.stringify({ resumeText, jobDescription, industry }),
       });
 
       const data = await res.json();
@@ -84,6 +109,7 @@ const YourResumes = () => {
 
       setResults(data);
       setStep("results");
+      fetchHistory(); // refresh history with the new analysis
     } catch (err) {
       setError(err.message);
       setStep("jd");
@@ -96,6 +122,18 @@ const YourResumes = () => {
     setFile(null); setJobDescription(""); setResumeText(""); setResults(null);
     setError(""); setStep("upload");
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDownloadPDF = () => {
+    const element = document.getElementById("report-content");
+    const opt = {
+      margin:       0.5,
+      filename:     'ResumeAI-Report.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
   };
 
   const s = results?.suggestions;
@@ -131,6 +169,46 @@ const YourResumes = () => {
             <span className="material-symbols-outlined">dashboard</span>
             <span className="font-label-md text-label-md">Results Report</span>
           </div>
+          
+          {/* History Section */}
+          <div className="mt-8 mb-2 px-md">
+            <h4 className="font-label-md text-xs text-on-surface-variant uppercase tracking-wider font-bold">Recent Analyses</h4>
+          </div>
+          {historyLoading ? (
+            <div className="px-md py-sm text-center">
+              <span className="material-symbols-outlined animate-spin text-secondary text-xl">refresh</span>
+            </div>
+          ) : history.length > 0 ? (
+            history.map((item) => (
+              <button 
+                key={item._id}
+                onClick={() => {
+                  setResults({
+                    atsScore: item.atsScore,
+                    suggestions: item.suggestions,
+                    keywordStats: item.keywordStats // if it was saved, otherwise undefined
+                  });
+                  setStep("results");
+                  setMobileMenuOpen(false);
+                }}
+                className={`flex flex-col items-start gap-1 px-md py-3 rounded-lg group transition-all duration-300 text-left ${results?.atsScore === item.atsScore && results?.suggestions === item.suggestions ? 'bg-surface-variant/50 border-l-4 border-secondary' : 'hover:bg-surface-variant/30 border-l-4 border-transparent'}`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-label-md text-primary line-clamp-1">Score: {item.atsScore}%</span>
+                  <span className="font-caption text-on-surface-variant text-[10px]">{new Date(item.createdAt).toLocaleDateString()}</span>
+                </div>
+                <span className="font-caption text-on-surface-variant line-clamp-1 opacity-80">
+                  {typeof item.suggestions?.overall_assessment === "string" 
+                    ? item.suggestions.overall_assessment.substring(0, 40) + "..."
+                    : "View Analysis Report"}
+                </span>
+              </button>
+            ))
+          ) : (
+            <div className="px-md py-sm">
+              <p className="font-caption text-on-surface-variant italic">No past analyses found.</p>
+            </div>
+          )}
         </div>
         
         <div className="mt-auto flex flex-col gap-sm pt-md border-t border-outline-variant/30">
@@ -200,13 +278,34 @@ const YourResumes = () => {
                 {step === "jd" && (
                   <div className="flex flex-col">
                     <h2 className="font-headline-lg text-headline-lg text-primary mb-2">Target Job Description</h2>
-                    <p className="font-body-md text-on-surface-variant mb-6">Paste the description of the job you are applying for.</p>
+                    <p className="font-body-md text-on-surface-variant mb-6">Configure your analysis context and paste the target description.</p>
                     
-                    <textarea 
-                      className="w-full p-4 bg-surface border border-outline-variant/40 rounded-lg font-body-md text-primary focus:border-secondary outline-none transition-colors mb-6 resize-y"
-                      rows="10" placeholder="Paste job description here..."
-                      value={jobDescription} onChange={(e) => { setJobDescription(e.target.value); setError(""); }}
-                    />
+                    <div className="mb-4">
+                      <label className="block font-label-md text-primary mb-1">Target Industry</label>
+                      <select 
+                        value={industry}
+                        onChange={(e) => setIndustry(e.target.value)}
+                        className="w-full p-3 bg-surface border border-outline-variant/40 rounded-lg font-body-md text-primary focus:border-secondary outline-none transition-colors"
+                      >
+                        <option value="Technology / Software">Technology / Software</option>
+                        <option value="Finance / Banking">Finance / Banking</option>
+                        <option value="Healthcare / Medical">Healthcare / Medical</option>
+                        <option value="Core Engineering / Manufacturing">Core Engineering / Manufacturing</option>
+                        <option value="Marketing / Sales">Marketing / Sales</option>
+                        <option value="Consulting / Management">Consulting / Management</option>
+                        <option value="Design / Creative">Design / Creative</option>
+                        <option value="General / Other">General / Other</option>
+                      </select>
+                    </div>
+
+                    <div className="mb-6">
+                      <label className="block font-label-md text-primary mb-1">Job Description</label>
+                      <textarea 
+                        className="w-full p-4 bg-surface border border-outline-variant/40 rounded-lg font-body-md text-primary focus:border-secondary outline-none transition-colors resize-y"
+                        rows="10" placeholder="Paste job description here..."
+                        value={jobDescription} onChange={(e) => { setJobDescription(e.target.value); setError(""); }}
+                      />
+                    </div>
                     
                     <div className="flex gap-4">
                       <button onClick={handleReset} className="px-6 py-3 rounded-lg border border-outline-variant/40 text-on-surface-variant hover:bg-surface-variant/30 transition-colors font-label-md">Back</button>
@@ -229,7 +328,7 @@ const YourResumes = () => {
 
             {/* Step: Results Dashboard */}
             {step === "results" && results && (
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-lg lg:gap-gutter">
+              <div id="report-content" className="grid grid-cols-1 xl:grid-cols-12 gap-lg lg:gap-gutter p-4 md:p-0">
                 <div className="col-span-1 xl:col-span-9 flex flex-col gap-xl">
                   {/* Dashboard Header */}
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-md pb-md border-b border-outline-variant/20">
@@ -237,8 +336,11 @@ const YourResumes = () => {
                       <h2 className="font-headline-lg text-headline-lg text-primary mb-xs">Analysis Report</h2>
                       <p className="font-body-md text-body-md text-on-surface-variant">Reviewing against target job description</p>
                     </div>
-                    <div className="text-right flex items-center gap-md">
-                      <button onClick={() => setStep("jd")} className="flex items-center gap-xs bg-surface-container hover:bg-surface-variant px-sm py-xs rounded-lg transition-colors">
+                    <div className="text-right flex items-center gap-md" data-html2canvas-ignore>
+                      <button onClick={handleDownloadPDF} className="flex items-center gap-xs bg-[#00687a] text-white hover:bg-[#005161] px-md py-sm rounded-lg transition-colors shadow-sm font-label-md">
+                        <span className="material-symbols-outlined text-sm">download</span> Export PDF
+                      </button>
+                      <button onClick={() => setStep("jd")} className="flex items-center gap-xs bg-surface-container hover:bg-surface-variant px-sm py-sm rounded-lg transition-colors font-label-md">
                         <span className="material-symbols-outlined text-sm">refresh</span> Re-analyze
                       </button>
                     </div>
