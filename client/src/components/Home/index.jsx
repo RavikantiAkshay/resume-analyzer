@@ -62,9 +62,9 @@ const Home = () => {
                 {/* Background decorative grid */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
                 
-                <div className="bg-secondary-container/30 text-on-secondary-container font-label-md px-4 py-1.5 rounded-full w-max border border-secondary/20 mb-6 z-10 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm">construction</span>
-                  <span>Coming Soon</span>
+                <div className="bg-primary-container/30 text-primary font-label-md px-4 py-1.5 rounded-full w-max border border-primary/20 mb-6 z-10 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm">rocket_launch</span>
+                  <span>New Feature</span>
                 </div>
                 
                 <div className="relative w-24 h-24 bg-surface-container-low rounded-2xl flex items-center justify-center mb-6 z-10 shadow-sm border border-outline-variant/30 group-hover:scale-105 transition-transform">
@@ -79,14 +79,14 @@ const Home = () => {
                 </h3>
                 
                 <p className="font-body-md text-on-surface-variant max-w-sm mb-8 z-10">
-                  Don't have a resume yet? Soon you'll be able to craft an ATS-perfect resume from scratch using our intelligent builder.
+                  Craft an ATS-perfect resume from scratch using our intelligent builder. Convert raw experience into high-impact STAR bullets instantly.
                 </p>
                 
                 <div className="w-full flex justify-center z-10">
-                  <button className="bg-surface-container hover:bg-surface-variant text-primary font-label-md px-6 py-3 rounded-lg transition-colors shadow-sm flex items-center gap-2 border border-outline-variant/30 cursor-not-allowed opacity-80" disabled>
-                    <span className="material-symbols-outlined text-sm">notifications</span>
-                    Notify Me When Live
-                  </button>
+                  <Link to={ctaPath} className="bg-[#0f172a] hover:bg-[#00687a] text-white font-label-md px-6 py-3 rounded-lg transition-colors shadow-sm flex items-center gap-2 border border-transparent">
+                    <span className="material-symbols-outlined text-sm">edit_document</span>
+                    Start Building Now
+                  </Link>
                 </div>
               </div>
             </div>
@@ -116,26 +116,26 @@ const Home = () => {
               <span className="material-symbols-outlined text-4xl text-[#0f172a]" data-icon="upload_file">upload_file</span>
               <div className="absolute top-0 right-4 w-6 h-6 bg-[#00687a] text-white rounded-full flex items-center justify-center font-label-md text-xs shadow-sm">1</div>
             </div>
-            <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">Upload Resume</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm">Simply upload your current resume. We support PDF formats.</p>
-          </div>
-          
-          <div className="relative z-10 flex flex-col items-center text-center group">
-            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-level-2 border border-outline-variant/20 mb-6 group-hover:border-secondary transition-colors">
-              <span className="material-symbols-outlined text-4xl text-[#0f172a]" data-icon="query_stats">query_stats</span>
-              <div className="absolute top-0 right-4 w-6 h-6 bg-[#00687a] text-white rounded-full flex items-center justify-center font-label-md text-xs shadow-sm">2</div>
-            </div>
-            <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">Analyze</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm">Our AI scans your resume against the provided Job Description to identify gaps.</p>
+            <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">Upload or Build</h3>
+            <p className="font-body-md text-body-md text-on-surface-variant text-sm">Upload an existing PDF or start from scratch using our AI Builder.</p>
           </div>
           
           <div className="relative z-10 flex flex-col items-center text-center group">
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-level-2 border border-outline-variant/20 mb-6 group-hover:border-secondary transition-colors">
               <span className="material-symbols-outlined text-4xl text-[#0f172a]" data-icon="auto_fix">auto_fix</span>
+              <div className="absolute top-0 right-4 w-6 h-6 bg-[#00687a] text-white rounded-full flex items-center justify-center font-label-md text-xs shadow-sm">2</div>
+            </div>
+            <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">AI Optimize</h3>
+            <p className="font-body-md text-body-md text-on-surface-variant text-sm">Our AI helps you write high-impact STAR bullets for your experience.</p>
+          </div>
+          
+          <div className="relative z-10 flex flex-col items-center text-center group">
+            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-level-2 border border-outline-variant/20 mb-6 group-hover:border-secondary transition-colors">
+              <span className="material-symbols-outlined text-4xl text-[#0f172a]" data-icon="query_stats">query_stats</span>
               <div className="absolute top-0 right-4 w-6 h-6 bg-[#00687a] text-white rounded-full flex items-center justify-center font-label-md text-xs shadow-sm">3</div>
             </div>
-            <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">Optimize</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm">Apply our actionable feedback to include missing keywords and rewrite bullets.</p>
+            <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">ATS Analyze</h3>
+            <p className="font-body-md text-body-md text-on-surface-variant text-sm">Scan your final resume against a Job Description to ensure it passes ATS filters.</p>
           </div>
         </div>
       </section>

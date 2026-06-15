@@ -6,6 +6,7 @@ import Register from "./components/Register/index.jsx";
 import Login from "./components/Login/index.jsx";
 import YourResumes from "./components/YourResumes/index.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/index.jsx";
+import Builder from "./components/Builder/index.jsx";
 
 
 function App() {
@@ -21,6 +22,14 @@ function App() {
           element={
             <ProtectedRoute>
               <YourResumes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/builder"
+          element={
+            <ProtectedRoute>
+              <Builder />
             </ProtectedRoute>
           }
         />

@@ -13,7 +13,7 @@ const Navbar = () => {
     setIsLoggedIn(!!token);
   }, [location]);
 
-  if (location.pathname === "/your-resumes") {
+  if (location.pathname === "/your-resumes" || location.pathname === "/builder") {
     return null; // Dashboard has its own nav
   }
 

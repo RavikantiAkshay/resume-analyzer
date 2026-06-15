@@ -166,8 +166,12 @@ const YourResumes = () => {
           </Link>
           <button onClick={handleReset} className={`flex items-center gap-md px-md py-sm rounded-lg group transition-all duration-300 ${step !== 'results' ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-variant/30'}`}>
             <span className="material-symbols-outlined group-hover:scale-110 transition-transform">upload_file</span>
-            <span className="font-label-md text-label-md">New Analysis</span>
+            <span className="font-label-md text-label-md">ATS Analysis</span>
           </button>
+          <Link to="/builder" className="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant/30 rounded-lg group transition-all duration-300">
+            <span className="material-symbols-outlined group-hover:scale-110 transition-transform">edit_document</span>
+            <span className="font-label-md text-label-md">Resume Builder</span>
+          </Link>
           <div className={`flex items-center gap-md px-md py-sm rounded-lg transition-all duration-300 ${step === 'results' ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant/50 pointer-events-none'}`}>
             <span className="material-symbols-outlined">dashboard</span>
             <span className="font-label-md text-label-md">Results Report</span>
