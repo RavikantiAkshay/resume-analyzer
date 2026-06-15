@@ -1,4 +1,7 @@
+import fs from "fs";
 import ResumeBuilder from "../models/ResumeBuilder.js";
+import { parseResume } from "../utils/resumeParser.js";
+import { generateStarBullets, parseResumeToStructuredData } from "../utils/builderAi.js";
 
 // Helper to strip fake IDs from frontend (e.g. timestamp strings)
 const sanitizeSections = (sections) => {
@@ -75,5 +78,48 @@ export const deleteResume = async (req, res, next) => {
     return res.status(200).json({ success: true, message: "Resume deleted" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const generateBullets = async (req, res, next) => {
+  try {
+    const { rawExperience } = req.body;
+    if (!rawExperience) {
+      return res.status(400).json({ success: false, message: "Raw experience is required" });
+    }
+    const bullets = await generateStarBullets(rawExperience);
+    return res.status(200).json({ success: true, data: bullets });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const parseUpload = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded!" });
+    }
+
+    // Read the file from the disk
+    const fileBuffer = fs.readFileSync(req.file.path);
+
+    // Call PDF parser utility to extract raw text
+    const extractedText = await parseResume(fileBuffer);
+
+    // Delete the temporary file from the disk
+    fs.unlinkSync(req.file.path);
+
+    // Use AI to structure the text
+    const structuredData = await parseResumeToStructuredData(extractedText);
+
+    return res.status(200).json({ success: true, data: structuredData });
+  } catch (err) {
+    console.error("Parse Upload Error:", err.message);
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkErr) {}
+    }
+    return res.status(500).json({ success: false, message: "Failed to parse resume.", error: err.message });
   }
 };
