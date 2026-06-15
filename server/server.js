@@ -16,7 +16,7 @@ app.set("trust proxy", 1);
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:5173", // Allow requests from our Vite frontend
+  origin: process.env.CLIENT_URL || "http://localhost:5173", // Allow requests from our frontend
   credentials: true
 }));
 app.use(express.json());

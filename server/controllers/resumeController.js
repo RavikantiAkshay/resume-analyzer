@@ -1,3 +1,4 @@
+import fs from "fs";
 import { parseResume } from "../utils/resumeParser.js";
 import { extractKeywords } from "../utils/keywordExtractor.js";
 import { calculateATSScore } from "../utils/atsScore.js";
@@ -18,8 +19,14 @@ export const uploadResume = async (req, res) => {
       });
     }
 
+    // Read the file from the disk
+    const fileBuffer = fs.readFileSync(req.file.path);
+
     // Call PDF parser utility to extract text content
-    const extractedText = await parseResume(req.file.buffer);
+    const extractedText = await parseResume(fileBuffer);
+
+    // Delete the temporary file from the disk
+    fs.unlinkSync(req.file.path);
 
     // Grab first 500 characters for preview purposes
     const preview = extractedText.substring(0, 500) + (extractedText.length > 500 ? "..." : "");
@@ -33,6 +40,14 @@ export const uploadResume = async (req, res) => {
     });
   } catch (err) {
     console.error("Resume Upload & Parsing Controller Error:", err.message);
+    // Attempt to delete the file if an error occurred and the file still exists
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkErr) {
+        console.error("Failed to delete temp file:", unlinkErr);
+      }
+    }
     return res.status(500).json({
       success: false,
       message: "Failed to parse the uploaded resume.",
