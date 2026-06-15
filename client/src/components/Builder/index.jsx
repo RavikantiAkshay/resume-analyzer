@@ -191,6 +191,25 @@ const Builder = () => {
     setActiveResume({ ...activeResume, experience: updated });
   };
 
+  const addEducation = () => {
+    setActiveResume({
+      ...activeResume,
+      education: [...(activeResume.education || []), { school: "", degree: "", fieldOfStudy: "", startDate: "", endDate: "" }]
+    });
+  };
+
+  const updateEducation = (index, field, value) => {
+    const updated = [...activeResume.education];
+    updated[index][field] = value;
+    setActiveResume({ ...activeResume, education: updated });
+  };
+
+  const updateSkills = (skillsString) => {
+    // split by comma and map to array
+    const skillsArray = skillsString.split(',').map(s => s.trim()).filter(s => s);
+    setActiveResume({ ...activeResume, skills: skillsArray });
+  };
+
   return (
     <div className="flex h-screen overflow-hidden font-body-md text-body-md bg-surface text-on-surface">
       {/* SideNavBar (Same as Dashboard) */}
@@ -361,44 +380,147 @@ const Builder = () => {
                         ))}
                       </div>
                     </section>
-                  </div>
-                </div>
 
-                {/* Live Preview Panel */}
-                <div className="bg-[#f0f0f0] rounded-xl border border-outline-variant/20 shadow-level-1 overflow-hidden hidden xl:flex flex-col h-full items-center py-4">
-                  <div className="bg-white w-full max-w-[8.5in] aspect-[8.5/11] shadow-md p-8 overflow-y-auto" style={{ transform: "scale(0.85)", transformOrigin: "top center" }}>
-                    {/* Resume Header */}
-                    <div className="text-center border-b border-gray-300 pb-4 mb-4">
-                      <h1 className="text-3xl font-serif font-bold text-gray-900 uppercase tracking-wider">{activeResume.personalInfo?.fullName || "Your Name"}</h1>
-                      <div className="text-sm text-gray-600 mt-2 flex justify-center gap-4 flex-wrap">
-                        {activeResume.personalInfo?.email && <span>{activeResume.personalInfo.email}</span>}
-                        {activeResume.personalInfo?.phone && <span>{activeResume.personalInfo.phone}</span>}
-                        {activeResume.personalInfo?.linkedin && <span>{activeResume.personalInfo.linkedin}</span>}
+                    {/* Education */}
+                    <section>
+                      <div className="flex justify-between items-center mb-4 border-b border-outline-variant/30 pb-2">
+                        <h3 className="font-title-lg text-primary">Education</h3>
+                        <button onClick={addEducation} className="text-secondary flex items-center gap-1 font-label-md"><span className="material-symbols-outlined text-sm">add</span> Add</button>
                       </div>
-                    </div>
-                    
-                    {/* Resume Experience */}
-                    {activeResume.experience && activeResume.experience.length > 0 && (
-                      <div className="mb-4">
-                        <h2 className="text-lg font-serif font-bold text-gray-800 border-b border-gray-300 mb-2 uppercase tracking-wide">Experience</h2>
-                        {activeResume.experience.map((exp, i) => (
-                          <div key={i} className="mb-3">
-                            <div className="flex justify-between items-baseline font-bold text-gray-800">
-                              <span>{exp.role || "Role"}</span>
-                              <span className="text-sm font-normal">{exp.startDate} - {exp.current ? "Present" : exp.endDate || "Date"}</span>
+                      
+                      <div className="flex flex-col gap-6">
+                        {activeResume.education?.map((edu, i) => (
+                          <div key={i} className="p-4 bg-surface-container-lowest border border-outline-variant/20 rounded-lg">
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div><label className="block text-xs font-bold text-on-surface-variant mb-1">School</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-white" value={edu.school || ""} onChange={e => updateEducation(i, "school", e.target.value)} /></div>
+                              <div><label className="block text-xs font-bold text-on-surface-variant mb-1">Degree</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-white" value={edu.degree || ""} onChange={e => updateEducation(i, "degree", e.target.value)} /></div>
+                              <div><label className="block text-xs font-bold text-on-surface-variant mb-1">Field of Study</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-white" value={edu.fieldOfStudy || ""} onChange={e => updateEducation(i, "fieldOfStudy", e.target.value)} /></div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div><label className="block text-xs font-bold text-on-surface-variant mb-1">Start Date</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-white placeholder-gray-400" placeholder="e.g. Sep 2018" value={edu.startDate || ""} onChange={e => updateEducation(i, "startDate", e.target.value)} /></div>
+                                <div><label className="block text-xs font-bold text-on-surface-variant mb-1">End Date</label><input type="text" className="w-full p-2 border border-outline-variant/40 rounded bg-white placeholder-gray-400" placeholder="e.g. May 2022" value={edu.endDate || ""} onChange={e => updateEducation(i, "endDate", e.target.value)} /></div>
+                              </div>
                             </div>
-                            <div className="italic text-gray-600 mb-1">{exp.company || "Company"}</div>
-                            {exp.bullets && exp.bullets.length > 0 ? (
-                              <ul className="list-disc pl-5 text-gray-700 text-sm space-y-1">
-                                {exp.bullets.map((b, bIdx) => b.trim() && <li key={bIdx}>{b}</li>)}
-                              </ul>
-                            ) : (
-                              <p className="text-gray-500 text-sm italic">{exp.description || "Generate STAR bullets to see them here."}</p>
-                            )}
                           </div>
                         ))}
                       </div>
-                    )}
+                    </section>
+
+                    {/* Skills */}
+                    <section>
+                      <h3 className="font-title-lg text-primary mb-4 border-b border-outline-variant/30 pb-2">Skills</h3>
+                      <div>
+                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Comma-separated skills</label>
+                        <textarea 
+                          rows="3" 
+                          className="w-full p-2 border border-outline-variant/40 rounded bg-surface" 
+                          placeholder="e.g. React, Node.js, Python, AWS" 
+                          value={activeResume.skills?.join(', ') || ""} 
+                          onChange={e => updateSkills(e.target.value)} 
+                        />
+                      </div>
+                    </section>
+
+                  </div>
+                </div>
+
+                {/* Live Preview Panel - Modern 2-Column Professional Design */}
+                <div className="bg-[#f0f0f0] rounded-xl border border-outline-variant/20 shadow-level-1 overflow-hidden hidden xl:flex flex-col h-full items-center py-4">
+                  <div className="bg-white w-full max-w-[8.5in] aspect-[8.5/11] shadow-md overflow-hidden flex flex-col font-sans" style={{ transform: "scale(0.85)", transformOrigin: "top center" }}>
+                    
+                    {/* Header Top Bar */}
+                    <div className="bg-[#2b3a4a] text-white p-8">
+                      <h1 className="text-4xl font-bold tracking-wider uppercase mb-1">{activeResume.personalInfo?.fullName || "Your Name"}</h1>
+                      {activeResume.personalInfo?.location && <div className="text-[#a5b4fc] text-lg font-medium">{activeResume.personalInfo.location}</div>}
+                    </div>
+
+                    <div className="flex flex-row flex-grow h-full">
+                      
+                      {/* Left Sidebar (Contact, Education, Skills) */}
+                      <div className="w-1/3 bg-[#f4f6f8] p-6 border-r border-gray-200 flex flex-col gap-8">
+                        {/* Contact section */}
+                        <div>
+                          <h2 className="text-[#2b3a4a] font-bold tracking-widest uppercase border-b-2 border-[#2b3a4a] pb-1 mb-4 text-sm">Contact</h2>
+                          <div className="flex flex-col gap-3 text-sm text-gray-700">
+                            {activeResume.personalInfo?.phone && <div className="flex items-start break-all"><strong>Phone:</strong> <br/>{activeResume.personalInfo.phone}</div>}
+                            {activeResume.personalInfo?.email && <div className="flex items-start break-all"><strong>Email:</strong> <br/>{activeResume.personalInfo.email}</div>}
+                            {activeResume.personalInfo?.linkedin && <div className="flex items-start break-all"><strong>LinkedIn:</strong> <br/>{activeResume.personalInfo.linkedin}</div>}
+                            {activeResume.personalInfo?.portfolio && <div className="flex items-start break-all"><strong>Portfolio:</strong> <br/>{activeResume.personalInfo.portfolio}</div>}
+                          </div>
+                        </div>
+
+                        {/* Education section */}
+                        {activeResume.education && activeResume.education.length > 0 && (
+                          <div>
+                            <h2 className="text-[#2b3a4a] font-bold tracking-widest uppercase border-b-2 border-[#2b3a4a] pb-1 mb-4 text-sm">Education</h2>
+                            <div className="flex flex-col gap-4">
+                              {activeResume.education.map((edu, i) => (
+                                <div key={i} className="text-sm">
+                                  <div className="font-bold text-gray-800 leading-tight">{edu.degree} {edu.fieldOfStudy && `in ${edu.fieldOfStudy}`}</div>
+                                  <div className="text-gray-600 mt-1">{edu.school}</div>
+                                  <div className="text-gray-500 text-xs italic mt-0.5">{edu.startDate} {edu.startDate && edu.endDate && '-'} {edu.endDate}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Skills section */}
+                        {activeResume.skills && activeResume.skills.length > 0 && (
+                          <div>
+                            <h2 className="text-[#2b3a4a] font-bold tracking-widest uppercase border-b-2 border-[#2b3a4a] pb-1 mb-4 text-sm">Skills</h2>
+                            <ul className="list-none flex flex-col gap-1 text-sm text-gray-700">
+                              {activeResume.skills.map((skill, i) => (
+                                <li key={i} className="flex items-center gap-2">
+                                  <span className="w-1.5 h-1.5 bg-[#2b3a4a] rounded-full"></span>
+                                  <span>{skill}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right Main Content (Summary, Experience) */}
+                      <div className="w-2/3 p-6 bg-white flex flex-col gap-6">
+                        
+                        {/* Summary / Profile (if exists) */}
+                        {activeResume.personalInfo?.summary && (
+                          <div>
+                            <h2 className="text-[#2b3a4a] font-bold tracking-widest uppercase border-b-2 border-gray-200 pb-1 mb-3 text-lg">Profile</h2>
+                            <p className="text-sm text-gray-700 leading-relaxed">{activeResume.personalInfo.summary}</p>
+                          </div>
+                        )}
+
+                        {/* Experience */}
+                        {activeResume.experience && activeResume.experience.length > 0 && (
+                          <div>
+                            <h2 className="text-[#2b3a4a] font-bold tracking-widest uppercase border-b-2 border-gray-200 pb-1 mb-4 text-lg">Professional Experience</h2>
+                            <div className="flex flex-col gap-5">
+                              {activeResume.experience.map((exp, i) => (
+                                <div key={i}>
+                                  <div className="flex justify-between items-baseline mb-1">
+                                    <h3 className="font-bold text-gray-800 text-base">{exp.role || "Role"}</h3>
+                                    <span className="text-xs font-semibold text-[#2b3a4a] whitespace-nowrap ml-4">
+                                      {exp.startDate} {exp.startDate && '-'} {exp.current ? "Present" : exp.endDate}
+                                    </span>
+                                  </div>
+                                  <div className="text-gray-600 font-medium italic text-sm mb-2">{exp.company || "Company"}</div>
+                                  
+                                  {exp.bullets && exp.bullets.length > 0 ? (
+                                    <ul className="list-disc pl-4 text-gray-700 text-sm space-y-1.5 marker:text-gray-400">
+                                      {exp.bullets.map((b, bIdx) => b.trim() && <li key={bIdx} className="pl-1">{b}</li>)}
+                                    </ul>
+                                  ) : (
+                                    <p className="text-gray-400 text-xs italic">{exp.description || "Generate STAR bullets to see them here."}</p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                    </div>
                   </div>
                 </div>
               </div>

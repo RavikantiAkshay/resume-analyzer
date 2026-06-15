@@ -34,12 +34,12 @@ const Navbar = () => {
         </Link>
         <div className="hidden md:flex space-x-lg items-center">
           <Link to="/" className={`font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg ${location.pathname === '/' ? 'text-primary font-medium' : ''}`}>Home</Link>
+          {isLoggedIn && (
+            <Link to="/your-resumes" className={`font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg ${location.pathname === '/your-resumes' ? 'text-primary font-medium' : ''}`}>Dashboard</Link>
+          )}
           <Link to="/contact" className={`font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg ${location.pathname === '/contact' ? 'text-primary font-medium' : ''}`}>Contact</Link>
           {!isLoggedIn && (
             <Link to="/login" className="font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg">Login</Link>
-          )}
-          {isLoggedIn && (
-            <Link to="/your-resumes" className="font-body-md text-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg">Dashboard</Link>
           )}
         </div>
         
@@ -65,16 +65,17 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="md:hidden bg-surface border-b border-outline-variant/30 absolute top-full left-0 w-full p-4 flex flex-col space-y-4 shadow-lg">
           <Link to="/" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Home</Link>
-          <Link to="/contact" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Contact</Link>
           {isLoggedIn ? (
             <>
               <Link to="/your-resumes" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Dashboard</Link>
-              <button onClick={handleLogout} className="font-label-md text-label-md bg-[#0f172a] text-white px-6 py-2.5 rounded-lg text-center w-full">Logout</button>
+              <Link to="/contact" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Contact</Link>
+              <button onClick={handleLogout} className="font-label-md text-label-md bg-[#0f172a] text-white px-6 py-2.5 rounded-lg text-center w-full mt-2">Logout</button>
             </>
           ) : (
             <>
+              <Link to="/contact" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Contact</Link>
               <Link to="/login" className="font-body-md text-body-md text-on-surface-variant hover:text-primary p-2 rounded-lg hover:bg-surface-container-low" onClick={closeMobile}>Login</Link>
-              <Link to="/register" className="font-label-md text-label-md bg-[#0f172a] text-white px-6 py-2.5 rounded-lg text-center w-full" onClick={closeMobile}>Get Started</Link>
+              <Link to="/register" className="font-label-md text-label-md bg-[#0f172a] text-white px-6 py-2.5 rounded-lg text-center w-full mt-2" onClick={closeMobile}>Get Started</Link>
             </>
           )}
         </div>
