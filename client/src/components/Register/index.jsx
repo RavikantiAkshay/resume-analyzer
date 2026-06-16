@@ -12,7 +12,7 @@ const Register = () => {
   const API_URL = "http://localhost:5000";
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("isAuthenticated");
     if (token) navigate("/your-resumes", { replace: true });
   }, [navigate]);
 
@@ -26,12 +26,13 @@ const Register = () => {
     setLoading(true); setError(""); setSuccess("");
     try {
       const res = await fetch(`${API_URL}/auth/google`, {
+        credentials: "include",
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Google registration failed.");
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("isAuthenticated", "true");
       setSuccess("Account created and logged in via Google! Redirecting...");
       setTimeout(() => navigate("/your-resumes"), 1000);
     } catch (err) {
@@ -65,6 +66,7 @@ const Register = () => {
     setLoading(true); setError(""); setSuccess("");
     try {
       const response = await fetch(`${API_URL}/auth/register`, {
+        credentials: "include",
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });

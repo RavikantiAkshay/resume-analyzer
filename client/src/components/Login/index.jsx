@@ -12,7 +12,7 @@ const Login = () => {
   const API_URL = "http://localhost:5000";
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("isAuthenticated");
     if (token) navigate("/your-resumes", { replace: true });
   }, [navigate]);
 
@@ -26,12 +26,13 @@ const Login = () => {
     setLoading(true); setError(""); setSuccess("");
     try {
       const res = await fetch(`${API_URL}/auth/google`, {
+        credentials: "include",
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Google authentication failed.");
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("isAuthenticated", "true");
       setSuccess("Logged in successfully via Google! Redirecting...");
       setTimeout(() => navigate("/your-resumes"), 1000);
     } catch (err) {
@@ -64,12 +65,13 @@ const Login = () => {
     setLoading(true); setError(""); setSuccess("");
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
+        credentials: "include",
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Invalid credentials.");
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("isAuthenticated", "true");
       setSuccess("Logged in successfully! Redirecting...");
       setFormData({ email: "", password: "" });
       setTimeout(() => navigate("/your-resumes"), 1000);

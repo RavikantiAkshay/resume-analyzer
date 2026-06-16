@@ -106,20 +106,19 @@ export const parseUpload = async (req, res, next) => {
     // Call PDF parser utility to extract raw text
     const extractedText = await parseResume(fileBuffer);
 
-    // Delete the temporary file from the disk
-    fs.unlinkSync(req.file.path);
-
     // Use AI to structure the text
     const structuredData = await parseResumeToStructuredData(extractedText);
 
     return res.status(200).json({ success: true, data: structuredData });
   } catch (err) {
     console.error("Parse Upload Error:", err.message);
+    return res.status(500).json({ success: false, message: "Failed to parse resume.", error: err.message });
+  } finally {
+    // Always cleanup the file
     if (req.file && req.file.path && fs.existsSync(req.file.path)) {
       try {
         fs.unlinkSync(req.file.path);
       } catch (unlinkErr) {}
     }
-    return res.status(500).json({ success: false, message: "Failed to parse resume.", error: err.message });
   }
 };

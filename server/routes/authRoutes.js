@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, googleLogin, getProfile } from "../controllers/authController.js";
+import { register, login, googleLogin, getProfile, logout } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { authLimiter } from "../middleware/rateLimiter.js";
 
@@ -16,6 +16,10 @@ router.post("/login", authLimiter, login);
 // Route: Google Authentication Login / Signup
 // POST /auth/google
 router.post("/google", authLimiter, googleLogin);
+
+// Route: Logout
+// POST /auth/logout
+router.post("/logout", logout);
 
 // Route: Get authenticated user profile (protected)
 // GET /auth/profile

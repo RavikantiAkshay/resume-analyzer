@@ -13,14 +13,15 @@ const Builder = () => {
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
   
-  const getToken = () => localStorage.getItem("token");
+  const getToken = () => localStorage.getItem("isAuthenticated");
 
   useEffect(() => {
     fetchResumes();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    try { await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); } catch (err) {}
+    localStorage.removeItem("isAuthenticated");
     navigate("/");
   };
 
@@ -28,7 +29,8 @@ const Builder = () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/builder`, {
-        headers: { Authorization: `Bearer ${getToken()}` },
+        credentials: "include",
+        
       });
       if (res.status === 401) { handleLogout(); return; }
       const data = await res.json();
@@ -49,8 +51,9 @@ const Builder = () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/builder`, {
+        credentials: "include",
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+        headers: { "Content-Type": "application/json", },
         body: JSON.stringify({ title: "New Resume", experience: [], education: [], skills: [] })
       });
       const data = await res.json();
@@ -73,8 +76,9 @@ const Builder = () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/builder/${id}`, {
+        credentials: "include",
         method: "DELETE",
-        headers: { Authorization: `Bearer ${getToken()}` },
+        
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -100,16 +104,18 @@ const Builder = () => {
       const formData = new FormData();
       formData.append("resume", file);
       const res = await fetch(`${API_URL}/builder/parse-upload`, {
+        credentials: "include",
         method: "POST",
-        headers: { Authorization: `Bearer ${getToken()}` },
+        
         body: formData,
       });
       const data = await res.json();
       if (res.ok && data.success) {
         // Create new resume with the structured data
         const createRes = await fetch(`${API_URL}/builder`, {
+        credentials: "include",
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+          headers: { "Content-Type": "application/json", },
           body: JSON.stringify({ ...data.data, title: "Imported Resume" })
         });
         const createData = await createRes.json();
@@ -133,8 +139,9 @@ const Builder = () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/builder/${activeResume._id}`, {
+        credentials: "include",
         method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+        headers: { "Content-Type": "application/json", },
         body: JSON.stringify(activeResume)
       });
       const data = await res.json();
@@ -155,8 +162,9 @@ const Builder = () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/builder/generate-bullets`, {
+        credentials: "include",
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+        headers: { "Content-Type": "application/json", },
         body: JSON.stringify({ rawExperience: rawText })
       });
       const data = await res.json();

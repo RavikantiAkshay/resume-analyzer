@@ -20,7 +20,7 @@ const YourResumes = () => {
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  const getToken = () => localStorage.getItem("token");
+  const getToken = () => localStorage.getItem("isAuthenticated");
 
   useEffect(() => {
     fetchHistory();
@@ -30,7 +30,8 @@ const YourResumes = () => {
     setHistoryLoading(true);
     try {
       const res = await fetch(`${API_URL}/resume/history`, {
-        headers: { Authorization: `Bearer ${getToken()}` },
+        credentials: "include",
+        
       });
       if (res.status === 401) { handleLogout(); return; }
       const data = await res.json();
@@ -44,8 +45,9 @@ const YourResumes = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    try { await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); } catch (err) {}
+    localStorage.removeItem("isAuthenticated");
     navigate("/");
   };
 
@@ -77,8 +79,9 @@ const YourResumes = () => {
       formData.append("resume", file);
 
       const res = await fetch(`${API_URL}/resume/upload`, {
+        credentials: "include",
         method: "POST",
-        headers: { Authorization: `Bearer ${getToken()}` },
+        
         body: formData,
       });
       if (res.status === 401) { handleLogout(); return; }
@@ -101,8 +104,9 @@ const YourResumes = () => {
 
     try {
       const res = await fetch(`${API_URL}/resume/analyze`, {
+        credentials: "include",
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+        headers: { "Content-Type": "application/json", },
         body: JSON.stringify({ resumeText, jobDescription, industry }),
       });
       if (res.status === 401) { handleLogout(); return; }

@@ -9,7 +9,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("isAuthenticated");
     setIsLoggedIn(!!token);
   }, [location]);
 
@@ -17,8 +17,9 @@ const Navbar = () => {
     return null; // Dashboard has its own nav
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    try { await fetch("http://localhost:5000/auth/logout", { method: "POST", credentials: "include" }); } catch (err) {}
+    localStorage.removeItem("isAuthenticated");
     setIsLoggedIn(false);
     setMobileOpen(false);
     navigate("/");
