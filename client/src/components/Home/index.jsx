@@ -201,50 +201,50 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-surface-container-lowest border-t border-outline-variant/30 w-full mt-xxl pt-12 pb-6">
+      <footer className="bg-[#0f172a] text-white border-t border-[#1e293b] w-full mt-xxl pt-12 pb-6">
         <div className="px-gutter max-w-container-max mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* Brand */}
             <div>
-              <div className="font-display-sm text-xl font-bold text-[#0f172a] mb-3">
+              <div className="font-display-sm text-xl font-bold text-white mb-3">
                 ResumeAnalyzer
               </div>
-              <p className="font-body-md text-on-surface-variant max-w-xs">
+              <p className="font-body-md text-slate-400 max-w-xs">
                 Build and optimize your resume to beat the ATS and land your dream job.
               </p>
             </div>
             
             {/* Quick Links */}
             <div>
-              <h4 className="font-title-md text-[#0f172a] font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 font-body-md text-on-surface-variant">
-                <li><Link to="/builder" className="hover:text-[#00687a] transition-colors">Resume Builder</Link></li>
-                <li><Link to="/your-resumes" className="hover:text-[#00687a] transition-colors">ATS Analyzer</Link></li>
-                <li><Link to="/contact" className="hover:text-[#00687a] transition-colors">Contact Us</Link></li>
+              <h4 className="font-title-md text-white font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 font-body-md text-slate-400">
+                <li><Link to="/builder" className="hover:text-white transition-colors">Resume Builder</Link></li>
+                <li><Link to="/your-resumes" className="hover:text-white transition-colors">ATS Analyzer</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
               </ul>
             </div>
             
             {/* Open Source */}
             <div>
-              <h4 className="font-title-md text-[#0f172a] font-semibold mb-4">Open Source</h4>
-              <ul className="space-y-2 font-body-md text-on-surface-variant">
-                <li><a href="https://github.com/RavikantiAkshay/resume-analyzer" target="_blank" rel="noreferrer" className="hover:text-[#00687a] transition-colors flex items-center gap-2">
+              <h4 className="font-title-md text-white font-semibold mb-4">Open Source</h4>
+              <ul className="space-y-2 font-body-md text-slate-400">
+                <li><a href="https://github.com/RavikantiAkshay/resume-analyzer" target="_blank" rel="noreferrer" className="hover:text-white transition-colors flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">code</span> View on GitHub
                 </a></li>
-                <li><a href="mailto:ravikantiakshay15@gmail.com" className="hover:text-[#00687a] transition-colors flex items-center gap-2">
+                <li><a href="mailto:ravikantiakshay15@gmail.com" className="hover:text-white transition-colors flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">mail</span> Email Developer
                 </a></li>
               </ul>
             </div>
           </div>
           
-          <div className="pt-6 border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="font-caption text-on-surface-variant">
-              © {new Date().getFullYear()} ResumeAnalyzer. All rights reserved.
+          <div className="pt-6 border-t border-[#1e293b] flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="font-caption text-slate-500">
+              © 2026 Ravikanti Akshay. All rights reserved.
             </div>
-            <div className="flex space-x-6 font-caption text-on-surface-variant">
-              <span className="hover:text-[#00687a] transition-colors cursor-pointer">Privacy Policy</span>
-              <span className="hover:text-[#00687a] transition-colors cursor-pointer">Terms of Service</span>
+            <div className="flex space-x-6 font-caption text-slate-500">
+              <span className="hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
+              <span className="hover:text-white transition-colors cursor-pointer">Terms of Service</span>
             </div>
           </div>
         </div>
