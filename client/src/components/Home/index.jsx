@@ -132,11 +132,11 @@ const Home = () => {
           <div className="relative z-10 flex flex-col items-center text-center group">
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-level-2 border border-outline-variant/20 mb-6 group-hover:border-secondary transition-colors">
               <span className="material-symbols-outlined text-4xl text-[#0f172a]" data-icon="query_stats">query_stats</span>
-              <div className="absolute top-0 right-4 w-6 h-6 bg-[#00687a] text-white rounded-full flex items-center justify-center font-label-md text-xs shadow-sm">3</div>
             </div>
             <h3 className="font-title-md text-title-md font-bold text-[#0f172a] mb-2">ATS Analyze</h3>
             <p className="font-body-md text-body-md text-on-surface-variant text-sm">Scan your final resume against a Job Description to ensure it passes ATS filters.</p>
           </div>
+          
         </div>
       </section>
 
@@ -201,16 +201,51 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-surface-container-low border-t border-outline-variant w-full mt-xxl">
-        <div className="flex flex-col md:flex-row justify-between items-center w-full px-gutter py-xl max-w-container-max mx-auto">
-          <div className="font-title-md text-title-md font-bold text-primary mb-4 md:mb-0">
-            ResumeAI
+      <footer className="bg-surface-container-lowest border-t border-outline-variant/30 w-full mt-xxl pt-12 pb-6">
+        <div className="px-gutter max-w-container-max mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* Brand */}
+            <div>
+              <div className="font-display-sm text-xl font-bold text-[#0f172a] mb-3">
+                ResumeAnalyzer
+              </div>
+              <p className="font-body-md text-on-surface-variant max-w-xs">
+                Build and optimize your resume to beat the ATS and land your dream job.
+              </p>
+            </div>
+            
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-title-md text-[#0f172a] font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 font-body-md text-on-surface-variant">
+                <li><Link to="/builder" className="hover:text-[#00687a] transition-colors">Resume Builder</Link></li>
+                <li><Link to="/your-resumes" className="hover:text-[#00687a] transition-colors">ATS Analyzer</Link></li>
+                <li><Link to="/contact" className="hover:text-[#00687a] transition-colors">Contact Us</Link></li>
+              </ul>
+            </div>
+            
+            {/* Open Source */}
+            <div>
+              <h4 className="font-title-md text-[#0f172a] font-semibold mb-4">Open Source</h4>
+              <ul className="space-y-2 font-body-md text-on-surface-variant">
+                <li><a href="https://github.com/RavikantiAkshay/resume-analyzer" target="_blank" rel="noreferrer" className="hover:text-[#00687a] transition-colors flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">code</span> View on GitHub
+                </a></li>
+                <li><a href="mailto:ravikantiakshay15@gmail.com" className="hover:text-[#00687a] transition-colors flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">mail</span> Email Developer
+                </a></li>
+              </ul>
+            </div>
           </div>
-          <div className="font-caption text-caption text-on-surface-variant mb-4 md:mb-0">
-            © 2026 ResumeAI Analyzer. All rights reserved.
-          </div>
-          <div className="flex space-x-6">
-            <Link to="/contact" className="font-caption text-caption text-on-surface-variant/70 hover:text-secondary transition-colors">Contact Support</Link>
+          
+          <div className="pt-6 border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="font-caption text-on-surface-variant">
+              © {new Date().getFullYear()} ResumeAnalyzer. All rights reserved.
+            </div>
+            <div className="flex space-x-6 font-caption text-on-surface-variant">
+              <span className="hover:text-[#00687a] transition-colors cursor-pointer">Privacy Policy</span>
+              <span className="hover:text-[#00687a] transition-colors cursor-pointer">Terms of Service</span>
+            </div>
           </div>
         </div>
       </footer>

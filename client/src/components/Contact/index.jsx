@@ -36,7 +36,7 @@ const Contact = () => {
                 <span className="material-symbols-outlined text-secondary bg-surface-container p-3 rounded-xl">email</span>
                 <div>
                   <p className="font-label-md text-on-surface-variant">Email</p>
-                  <p className="font-body-md text-primary font-medium">hello@resumeai.app</p>
+                  <p className="font-body-md text-primary font-medium">ravikantiakshay15@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -51,6 +51,15 @@ const Contact = () => {
                 <div>
                   <p className="font-label-md text-on-surface-variant">Response time</p>
                   <p className="font-body-md text-primary font-medium">Within 24 hours</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <span className="material-symbols-outlined text-secondary bg-surface-container p-3 rounded-xl">code</span>
+                <div>
+                  <p className="font-label-md text-on-surface-variant">Open Source</p>
+                  <p className="font-body-md text-primary font-medium">
+                    We are open source! <a href="https://github.com/RavikantiAkshay/resume-analyzer" target="_blank" rel="noreferrer" className="text-[#00687a] hover:underline">Contribute on GitHub</a>.
+                  </p>
                 </div>
               </div>
             </div>
