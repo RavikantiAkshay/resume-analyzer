@@ -18,7 +18,7 @@ const Navbar = () => {
   }
 
   const handleLogout = async () => {
-    try { await fetch("http://localhost:5000/auth/logout", { method: "POST", credentials: "include" }); } catch (err) {}
+    try { await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/auth/logout`, { method: "POST", credentials: "include" }); } catch (err) {}
     localStorage.removeItem("isAuthenticated");
     setIsLoggedIn(false);
     setMobileOpen(false);
