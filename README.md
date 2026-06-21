@@ -1,4 +1,4 @@
-# ResumeAnalyzer — AI-Powered Resume Builder & ATS Analyzer
+# ResumeAI — AI-Powered Resume Builder & ATS Analyzer
 
 An open-source, full-stack web application that helps you **build**, **optimize**, and **analyze** resumes using AI. Craft polished resumes with our live-preview builder, generate STAR-method bullet points with one click, and scan your resume against any job description for ATS compatibility — all in one platform.
 
@@ -59,7 +59,7 @@ An open-source, full-stack web application that helps you **build**, **optimize*
 ## 📁 Project Structure
 
 ```
-ResumeAnalyzer/
+ResumeAI/
 ├── client/                          # Frontend (React + Vite)
 │   ├── public/
 │   ├── src/
