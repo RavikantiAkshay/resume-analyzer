@@ -59,6 +59,11 @@ export const getResume = async (req, res, next) => {
 export const updateResume = async (req, res, next) => {
   try {
     const sanitizedData = sanitizeSections(req.body);
+
+    // Mass assignment protection: strip fields that must never be user-controlled
+    const protectedFields = ['userId', '_id', 'createdAt', 'updatedAt', '__v'];
+    protectedFields.forEach((field) => delete sanitizedData[field]);
+
     const resume = await ResumeBuilder.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
       sanitizedData,

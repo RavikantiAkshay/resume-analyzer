@@ -14,11 +14,13 @@ const generateToken = (id) => {
   });
 };
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const setTokenCookie = (res, token) => {
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Ensure true in production
-    sameSite: "lax", // Prevent CSRF
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax", // "none" required for cross-origin production cookies
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 };
@@ -275,6 +277,8 @@ export const getProfile = async (req, res) => {
 export const logout = (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     expires: new Date(0),
   });
   res.status(200).json({ success: true, message: "Logged out successfully" });
