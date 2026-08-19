@@ -33,7 +33,7 @@ You MUST respond strictly with a valid JSON object with a "bullets" key containi
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "qwen3.6-27b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Raw Experience:\n${rawExperience}` }
@@ -122,7 +122,7 @@ Schema:
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "qwen3.6-27b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Resume Text:\n${resumeText}` }

@@ -86,7 +86,7 @@ const stripMarkdown = (rawResponse) => {
 };
 
 /**
- * Analyzes a resume against a job description using the Groq API (LLaMA model).
+ * Analyzes a resume against a job description using the Groq API (qwen3.6-27b model).
  * 
  * @param {string} resumeText - The extracted text of the user's resume.
  * @param {string} jobDescription - The target job description text.
@@ -110,7 +110,7 @@ export const analyzeWithGroq = async (resumeText, jobDescription, industry = "Ge
         "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "qwen3.6-27b",
         messages: [
           { role: "system", content: buildSystemPrompt(industry) },
           { role: "user", content: userContent }

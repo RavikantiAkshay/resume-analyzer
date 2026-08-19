@@ -15,7 +15,7 @@ An open-source, full-stack web application that helps you **build**, **optimize*
 
 ### ATS Analyzer
 - **ATS Compatibility Score** — Keyword-by-keyword comparison between your resume and the target job description
-- **AI-Powered Analysis** — Deep, contextual analysis powered by Groq's LLaMA 3.3 70B model
+- **AI-Powered Analysis** — Deep, contextual analysis powered by Groq's qwen3.6-27b model
 - **Section-by-Section Breakdown** — Scores for skills match, experience relevance, education fit, formatting quality, and keyword optimization
 - **Missing Skills Detection** — Priority-ranked (critical/important/nice-to-have) missing skills with actionable suggestions
 - **Keyword Analysis** — Visual tag clouds showing well-used, underused, and missing keywords
@@ -51,7 +51,7 @@ An open-source, full-stack web application that helps you **build**, **optimize*
 | express-rate-limit | API rate limiting |
 | Multer | File upload handling (disk storage) |
 | pdfjs-dist | PDF text extraction |
-| Groq API (LLaMA 3.3 70B) | AI-powered analysis & bullet generation |
+| Groq API (qwen3.6-27b) | AI-powered analysis & bullet generation |
 | google-auth-library | Google OAuth verification |
 
 ---
@@ -96,7 +96,7 @@ ResumeAI/
 │   │   ├── builderRoutes.js         # /builder/* routes
 │   │   └── resumeRoutes.js          # /resume/* routes
 │   ├── utils/
-│   │   ├── aiAnalyzer.js            # Groq API integration (LLaMA 3.3 70B)
+│   │   ├── aiAnalyzer.js            # Groq API integration (qwen3.6-27b)
 │   │   ├── atsScore.js              # Keyword match percentage calculator
 │   │   ├── builderAi.js             # AI bullet generation & resume parsing
 │   │   ├── keywordExtractor.js      # Regex-based keyword extraction
@@ -278,7 +278,7 @@ Visit **[http://localhost:5173](http://localhost:5173)** in your browser.
 1. **Upload** — Your PDF resume is parsed server-side using `pdfjs-dist`, extracting all readable text
 2. **Keyword Extraction** — Both resume and job description are tokenized into lowercase 3+ character words
 3. **ATS Score** — Calculates the percentage of unique JD keywords found in your resume
-4. **AI Analysis** — The full resume and JD text are sent to Groq's LLaMA 3.3 70B model, which returns:
+4. **AI Analysis** — The full resume and JD text are sent to Groq's qwen3.6-27b model, which returns:
    - Overall compatibility score & letter grade
    - Section-by-section scores (skills, experience, education, formatting, keywords)
    - Strengths and weaknesses
@@ -305,7 +305,7 @@ Contributions are welcome! Here's how to get started:
 ## 🙏 Acknowledgements
 
 - [Groq](https://groq.com) — Ultra-fast AI inference
-- [Meta LLaMA 3.3](https://ai.meta.com/llama/) — Open-source large language model
+- [qwen3.6-27b](https://groq.com) — Open-source large language model
 - [Mozilla PDF.js](https://mozilla.github.io/pdf.js/) — PDF parsing library
 - [Google Identity Services](https://developers.google.com/identity) — OAuth 2.0 authentication
 
