@@ -1,5 +1,5 @@
 const stripMarkdown = (rawResponse) => {
-  let cleaned = rawResponse.trim();
+  let cleaned = rawResponse.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
   if (cleaned.startsWith("```json")) {
     cleaned = cleaned.substring(7);
   } else if (cleaned.startsWith("```")) {
